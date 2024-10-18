@@ -118,8 +118,8 @@
         >
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Other Pages:</h6>
-            <router-link class="collapse-item" to="/admin/pages/page-not-found">404 Page</router-link>
-            <router-link class="collapse-item" to="/admin/pages/blank">Blank Page</router-link>
+            <!-- <router-link class="collapse-item" to="/page-not-found">404 Page</router-link> -->
+            <!-- <router-link class="collapse-item" to="/blank">Blank Page</router-link> -->
           </div>
         </div>
       </li>
@@ -133,12 +133,12 @@
       </li>
 
       <!-- Nav Item - Tables -->
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <router-link class="nav-link" to="/admin/tables">
           <i class="fas fa-fw fa-table"></i>
           <span>Tables</span></router-link
         >
-      </li>
+      </li> -->
 
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block" />
@@ -157,8 +157,8 @@
 
     onBeforeMount( async () => {
         await sbadmin2.init();
-        console.log($("#sidebarToggle, #sidebarToggleTop"));
-        console.log(version);
+        // console.log($("#sidebarToggle, #sidebarToggleTop"));
+        // console.log(version);
     })
 
 </script>

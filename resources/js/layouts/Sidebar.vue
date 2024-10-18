@@ -6,12 +6,11 @@
       <!-- Sidebar - Brand -->
       <router-link
         class="sidebar-brand d-flex align-items-center justify-content-center"
-        to="/"
+        :to="{ name: 'dashboard' }"
       >
         <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-laugh-wink"></i>
         </div>
-        <!-- <div class="sidebar-brand-text mx-3">SB Admin <sup>2</sup></div> -->
         <div class="sidebar-brand-text mx-3">Administrators</div>
       </router-link>
 
@@ -20,9 +19,10 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item active">
-        <router-link class="nav-link" to="/admin">
+        <router-link class="nav-link" :to="{ name: 'dashboard' }">
           <i class="fas fa-fw fa-tachometer-alt"></i>
-          <span>Dashboard</span></router-link
+          <span>Dashboard</span>
+        </router-link
         >
       </li>
 
@@ -53,8 +53,8 @@
         >
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Other Pages:</h6>
-            <router-link class="collapse-item" to="/admin/pages/page-not-found">404 Page</router-link>
-            <router-link class="collapse-item" to="/admin/pages/blank">Blank Page</router-link>
+            <!-- <router-link class="collapse-item" to="/admin/pages/page-not-found">404 Page</router-link> -->
+            <!-- <router-link class="collapse-item" to="/admin/pages/blank">Blank Page</router-link> -->
           </div>
         </div>
       </li>
@@ -67,12 +67,12 @@
       </li>
 
       <!-- Nav Item - Tables -->
-      <li class="nav-item">
+      <!-- <li class="nav-item">
         <router-link class="nav-link" to="/admin/tables">
           <i class="fas fa-fw fa-table"></i>
           <span>Tables</span></router-link
         >
-      </li>
+      </li> -->
 
       <!-- Divider -->
       <hr class="sidebar-divider d-none d-md-block" />
@@ -86,13 +86,13 @@
 </template>
 
 <script setup>
-    import sbadmin2 from '../composables/sb-admin-2.js'
+    // import sbadmin2 from '../composables/sb-admin-2.js'
     import {onBeforeMount,version } from 'vue'
 
     onBeforeMount( async () => {
-        await sbadmin2.init();
-        console.log($("#sidebarToggle, #sidebarToggleTop"));
-        console.log(version);
+        // await sbadmin2.init();
+        // console.log($("#sidebarToggle, #sidebarToggleTop"));
+        // console.log(version);
     })
 
 </script>

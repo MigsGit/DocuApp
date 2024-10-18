@@ -1,9 +1,8 @@
-import "bootstrap";
 import _ from 'lodash';
 import { Modal } from 'bootstrap';
 import { useToast } from 'vue-toast-notification';
 import axios from 'axios';
-// import $ from "jquery";
+import $ from "jquery";
 import Swal from 'sweetalert2';
 // import {Chart} from "chart.js"
 import * as Chart from 'chart.js';
@@ -19,16 +18,16 @@ window._ = _;
 window.axios = axios;
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 // window.axios.baseURL = import.meta.env.APP_URL
-window.axios.defaults.baseURL = 'http://rapidv/doc-app/';
+window.axios.defaults.baseURL = 'http://rapidv/docu-app/';
 
 window.Modal = Modal;
 window.Toast = useToast;
 window.Swal = Swal;
 window.Chart = Chart;
 
-// try {
-//     window.$ = $;
-//     console.log($)
-// } catch (e) {
-//     console.log("JQUERY ERROR: " + e);
-// }
+try {
+    window.$ = $;
+    console.log($)
+} catch (e) {
+    console.log("JQUERY ERROR: " + e);
+}
