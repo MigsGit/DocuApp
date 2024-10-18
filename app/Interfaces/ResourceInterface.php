@@ -1,13 +1,13 @@
 <?php
 
-namespace $NAMESPACE$;
+namespace App\Interfaces;
 
-interface $CLASS_NAME$Interface
+interface ResourceInterface
 {
     /**
      * Create a interface
      *
-     * @param $model,array $data
+     * @return void
      */
     public function create($model,array $data);
     // public function read();

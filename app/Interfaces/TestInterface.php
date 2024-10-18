@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Interface;
+namespace App\Interfaces;
 
-interface ResourceInterface
+interface TestInterface
 {
     /**
      * Create a interface
      *
-     * @return void
+     * @param $model
+     * @param array $data
      */
     public function create($model,array $data);
     // public function read();

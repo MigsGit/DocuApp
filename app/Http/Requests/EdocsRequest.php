@@ -13,7 +13,7 @@ class EdocsRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,8 @@ class EdocsRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            // 'document_id'=> 'required',
+            'document_name'=> 'required',
         ];
     }
 }

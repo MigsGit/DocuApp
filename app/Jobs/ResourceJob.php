@@ -1,24 +1,25 @@
 <?php
 
 namespace App\Jobs;
-
+use App\Models\Document;
 
 
 //Interface
-use App\Interface\ResourceInterface;
+use Illuminate\Support\Facades\DB;
+use App\Interfaces\ResourceInterface;
 
 class ResourceJob implements ResourceInterface
 {
     /**
      * Execute the job.
      *
-     * @return void
+     * @return mixed $model,array $data
      */
     public function create($model,array $data){
-        return $model;
         date_default_timezone_set('Asia/Manila');
         DB::beginTransaction();
         try {
+            $model::insert($data);
             DB::commit();
             return response()->json(['is_success' => 'true']);
         } catch (Exception $e) {

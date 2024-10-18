@@ -6,7 +6,7 @@ use Illuminate\Support\ServiceProvider;
 /**
  * Import Interfaces and Repository
  */
-use App\Interface\ResourceInterface;
+use App\Interfaces\ResourceInterface;
 /**
  * Import Job
  */
