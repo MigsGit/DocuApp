@@ -31,11 +31,14 @@ class ResourceJob implements ResourceInterface
         try {
             if( isset( $id ) ){
                 $model::where('id',$id)->update($data);
+                $data_id = $id;
             }else{
-                $model::insert($data);
+                $insert_by_id = $model::insertById($data);
+                $data_id = $insert_by_id;
+
             }
             DB::commit();
-            return response()->json(['is_success' => 'true']);
+            return response()->json(['is_success' => 'true','data_id'=>$data_id]);
         } catch (Exception $e) {
             DB::rollback();
             return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);

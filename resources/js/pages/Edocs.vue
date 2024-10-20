@@ -71,6 +71,7 @@
                         class="form-control"
                         ref="documentFile"
                         type="file"
+                        multiple
                         @change="uploadFile()"
                     >
                     </div>
@@ -91,12 +92,12 @@
     import { onMounted, ref, reactive, watch,nextTick } from "vue";
     import Modal from '../components/Modal.vue'
 
-    const documentFile = ref(null);
+    const documentFile = ref([]);
     const tblEdocs = ref(null);
     const formSaveDocument = ref({
         documentId: null,
         documentName: null,
-        documentFile: null,
+        documentFile:[ ],
     });
 
 
@@ -141,8 +142,10 @@
     /*
         Function
     */
-    const uploadFile = async ()  => {
-        formSaveDocument.value.documentFile =  documentFile.value.files[0]
+    const uploadFile = async (event)  => {
+
+        formSaveDocument.value.documentFile =  Array.from(event.target.files);
+        formSaveDocument.value.documentFile =  documentFile.value.files
         console.log(formSaveDocument.value.documentFile);
     }
     const readDocumentById = async (documentId)  => {
@@ -164,10 +167,18 @@
         let formData = new FormData();
         formData.append("document_id", formSaveDocument.value.documentId);
         formData.append("document_name", formSaveDocument.value.documentName);
-        formData.append("document_file", formSaveDocument.value.documentFile);
+        // formSaveDocument.value.documentFile.append("document_file", formSaveDocument.value.documentFile);
+        for (let index = 0; index < formSaveDocument.value.documentFile.length; index++) {
+            formSaveDocument.value.documentFile[index];
+            formData.append(`document_file`, formSaveDocument.value.documentFile[index]); // Ensure each file is appended
+            // console.log(formSaveDocument.value.documentFile[index]);
+        }
+        return;
+        formSaveDocument.value.documentFile.forEach((file, index) => {
+        });
 
         console.log('formData',formData);
-
+        return;
         await axios.post('/api/save_document', formData, {
             headers: {
                 "Content-Type": "multipart/form-data",

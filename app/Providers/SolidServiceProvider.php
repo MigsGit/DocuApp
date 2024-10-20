@@ -1,16 +1,18 @@
 <?php
 
 namespace App\Providers;
-
 use Illuminate\Support\ServiceProvider;
 /**
- * Import Interfaces and Repository
+ * Import Interfaces
  */
 use App\Interfaces\ResourceInterface;
+use App\Interfaces\EdocsInterface;
 /**
  * Import Job
  */
 use App\Jobs\ResourceJob;
+use App\Jobs\EdocsJob;
+
 class SolidServiceProvider extends ServiceProvider
 {
     /**
@@ -21,6 +23,7 @@ class SolidServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(ResourceInterface::class, ResourceJob::class);
+        $this->app->bind(EdocsInterface::class, EdocsJob::class);
     }
 
     /**
