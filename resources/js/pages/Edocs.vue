@@ -1,19 +1,15 @@
 <template>
     <div class="container-fluid px-4">
         <!-- Page Heading -->
-        <h1 class="h3 mb-2 text-gray-800">Tables</h1>
-        <p class="mb-4">DataTables is a third party plugin that is used to generate the demo table below.
-            For more information about DataTables, please visit the <a target="_blank"
-                href="https://datatables.net">official DataTables documentation</a>.
-        </p>
+        <h1 class="h3 mb-2 text-gray-800">Edocs Table</h1>
         <div class="row">
             <div class="col-9">
                 <div class="card mt-3">
-                    <div class="card-header">Test</div>
                     <div class="card-body overflow-auto">
                         <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal"><i class="fas fa-plus"></i> Add Ticket</button>
                         <br><br>
                         <DataTable
+                            ref="tblEdocs"
                             class="table table-striped table-responsive mt-2"
                             :columns="columns"
                             ajax="/docu-app/api/get_module"
@@ -29,8 +25,8 @@
                                     <th>Action</th>
                                     <th>Status</th>
                                     <th>Category</th>
-                                    <th  style="width: 35%;">Document Name</th>
-                                    <th>Document</th>
+                                    <th class="w-50">Document Name</th>
+                                    <th class="w-50">Document</th>
                                     <!-- <th>Attachment</th> -->
                                     <!-- <th>Report Approvers</th> -->
                                 </tr>
@@ -56,12 +52,12 @@
                     </div>
                 </div>
                 <div class="col-12">
-                    <label class="sr-only" for="inlineFormInputGroup">Username</label>
+                    <label class="sr-only" for="inlineFormInputGroup">Document Name</label>
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
-                        <div class="input-group-text">Username</div>
+                        <div class="input-group-text">Document Name</div>
                         </div>
-                        <input v-model="formSaveDocument.documentName" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Username">
+                        <input v-model="formSaveDocument.documentName" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Document Name">
                     </div>
                 </div>
                 <div class="col-12">
@@ -95,7 +91,8 @@
     import { onMounted, ref, reactive, watch,nextTick } from "vue";
     import Modal from '../components/Modal.vue'
 
-    const documentFile = ref(null)
+    const documentFile = ref(null);
+    const tblEdocs = ref(null);
     const formSaveDocument = ref({
         documentId: null,
         documentName: null,
@@ -119,8 +116,9 @@
                 let btnEdocs = cell.querySelector("#btnEdocs")
                 if((btnEdocs !== null)){
                     btnEdocs.addEventListener('click', function(event){
-                        let ticketId = this.getAttribute('data-id')
-                        formSaveDocument.value.documentId = ticketId;
+                        let documentId = this.getAttribute('data-id')
+                        formSaveDocument.value.documentId = documentId;
+                        readDocumentById(documentId);
                     });
                 }
                 // if((btnViewTicket !== null)){
@@ -147,8 +145,22 @@
         formSaveDocument.value.documentFile =  documentFile.value.files[0]
         console.log(formSaveDocument.value.documentFile);
     }
+    const readDocumentById = async (documentId)  => {
+        console.log('documentId',documentId);
+        await axios.get('/api/read_document_by_id',{
+            params:{
+                document_id: documentId
+            }
+        }).then((response) => {
+            let document_details = response.data.data;
+            formSaveDocument.value.documentName = document_details[0].document_name;
+            console.log(document_details[0].document_name);
+            console.log(response.data.is_success);
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
     const saveDocument = async ()  => {
-        console.log('formSaveDocument',formSaveDocument.value.documentFile);
         let formData = new FormData();
         formData.append("document_id", formSaveDocument.value.documentId);
         formData.append("document_name", formSaveDocument.value.documentName);
@@ -160,11 +172,12 @@
             headers: {
                 "Content-Type": "multipart/form-data",
             },
-        }).then((res) => {
-            console.log(res);
+        }).then((response) => {
+            console.log(response);
+            tblEdocs.value.dt.draw();
+
         }).catch((err) => {
             console.log(err);
-
         });
     }
 

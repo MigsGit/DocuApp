@@ -38,16 +38,11 @@ class EdocsController extends Controller
         }
     }
     public function saveDocument(EdocsRequest $edocs_request){
-        // return $edocs_request->validated();
-        return $this->resource_interface->create( Document::class,$edocs_request->validated());
-        date_default_timezone_set('Asia/Manila');
-        DB::beginTransaction();
-        try {
-            DB::commit();
-            return response()->json(['is_success' => 'true']);
-        } catch (Exception $e) {
-            DB::rollback();
-            return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
-        }
+        return $this->resource_interface->createOrUpdate( Document::class,$edocs_request->validated(),$edocs_request->document_id);
     }
+    public function readDocumentById(Request $request){
+        // return $request->all();
+        return $this->resource_interface->readById(Document::class,$request->document_id);
+    }
+
 }

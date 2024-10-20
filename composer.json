@@ -11,8 +11,10 @@
         "laravel/framework": "^8.75",
         "laravel/sanctum": "^2.11",
         "laravel/tinker": "^2.5",
-        "twbs/bootstrap-sass": "^3.4",
         "maatwebsite/excel": "^3.1.37",
+        "setasign/fpdi": "^2.6",
+        "smalot/pdfparser": "^2.11",
+        "twbs/bootstrap-sass": "^3.4",
         "vinkla/hashids": "^9.1",
         "yajra/laravel-datatables-oracle": "~9.0"
     },
