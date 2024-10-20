@@ -43,33 +43,20 @@ class EdocsController extends Controller
         }
     }
     public function saveDocument(EdocsRequest $edocs_request){
-        // $save_document = $this->resource_interface->createOrUpdate( Document::class,$edocs_request->validated(),$edocs_request->document_id);
-        $edocs_request->validate([
-            'document_file' => 'required|mimes:pdf|max:2048', // Example: only allow PDFs with max 2MB size
-        ]);
-        $arr_original_filename = [];
+        return $save_document = $this->resource_interface->createOrUpdate( Document::class,$edocs_request->validated(),$edocs_request->document_id);
+        // $edocs_request->validate([
+        //     'document_file' => 'required|mimes:pdf|max:2048', // Example: only allow PDFs with max 2MB size
+        // ]);
         if($edocs_request->hasfile('document_file') ){
-        // $original_filename = $edocs_request->file('document_file')->getClientOriginalName(); //'/etc#hosts/@Álix Ãxel likes - beer?!.pdf';
-        // var_dump($original_filename);
-        $arr_original_filename = $edocs_request->file('document_file');
-            // foreach ($edocs_request->file('document_file') as $key => $file) {
-            //     // foreach ($request->file('txt_docu_reference') as $key => $file) {
-            //     $original_filename = $file->getClientOriginalName(); //'/etc#hosts/@Álix Ãxel likes - beer?!.pdf';
-            //     // return $file;
-            //     $arr_original_filename[] =$original_filename;
-
-            // }
-
-            // public function uploadFile($temp_file,$id);
-        }else{
-            return 'false';
+            return $this->edocs_interface->uploadFile($edocs_request->document_file,$save_document->data_id);
         }
-            var_dump($arr_original_filename);
         // $this->edocs_interface->uploadFile();
     }
     public function readDocumentById(Request $request){
         // return $request->all();
-        return $this->resource_interface->readById(Document::class,$request->document_id);
+        return $read_document_by_id = $this->resource_interface->readById(Document::class,$request->document_id);
+        return Storage::response( 'public/edocs/'. $document_id .'/'. $file_id);
+
     }
 
 }

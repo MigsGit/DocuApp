@@ -72,7 +72,7 @@
                         ref="documentFile"
                         type="file"
                         multiple
-                        @change="uploadFile()"
+                        @change="uploadFile"
                     >
                     </div>
                 </div>
@@ -97,7 +97,7 @@
     const formSaveDocument = ref({
         documentId: null,
         documentName: null,
-        documentFile:[ ],
+        documentFile:[],
     });
 
 
@@ -143,10 +143,9 @@
         Function
     */
     const uploadFile = async (event)  => {
-
         formSaveDocument.value.documentFile =  Array.from(event.target.files);
-        formSaveDocument.value.documentFile =  documentFile.value.files
-        console.log(formSaveDocument.value.documentFile);
+        // formSaveDocument.value.documentFile =  documentFile.value.files //If multiple files, required variable as array
+        console.log('uploadFile',formSaveDocument.value.documentFile);
     }
     const readDocumentById = async (documentId)  => {
         console.log('documentId',documentId);
@@ -167,18 +166,14 @@
         let formData = new FormData();
         formData.append("document_id", formSaveDocument.value.documentId);
         formData.append("document_name", formSaveDocument.value.documentName);
-        // formSaveDocument.value.documentFile.append("document_file", formSaveDocument.value.documentFile);
-        for (let index = 0; index < formSaveDocument.value.documentFile.length; index++) {
-            formSaveDocument.value.documentFile[index];
-            formData.append(`document_file`, formSaveDocument.value.documentFile[index]); // Ensure each file is appended
-            // console.log(formSaveDocument.value.documentFile[index]);
-        }
-        return;
+        console.log('saveDocument',formSaveDocument.value.documentFile);
+
         formSaveDocument.value.documentFile.forEach((file, index) => {
+            formData.append(`document_file[${index}]`, file);  // Ensures that each file gets a unique key
         });
 
-        console.log('formData',formData);
-        return;
+        // console.log('formData',formData);
+        // return;
         await axios.post('/api/save_document', formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
