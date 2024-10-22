@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use Yajra\DataTables\DataTables;
+
 use Illuminate\Http\Request;
+use Yajra\DataTables\DataTables;
+
 use App\Models\Document;
+use App\Services\PdfService;
+
 use App\Http\Requests\EdocsRequest;
-use App\Interfaces\ResourceInterface;
 use App\Interfaces\EdocsInterface;
+use App\Interfaces\ResourceInterface;
+use Illuminate\Support\Facades\Storage;
 // use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 
@@ -15,14 +20,17 @@ class EdocsController extends Controller
 {
     protected $resource_interface;
     protected $edocs_interface;
+
+    protected $pdf_service;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(ResourceInterface $resource_interface,EdocsInterface $edocs_interface) {
+    public function __construct(ResourceInterface $resource_interface,EdocsInterface $edocs_interface,PdfService $pdf_service) {
         $this->resource_interface = $resource_interface;
         $this->edocs_interface = $edocs_interface;
+        $this->pdf_service = $pdf_service;
     }
 
     public function get_module(Request $request){
@@ -43,19 +51,33 @@ class EdocsController extends Controller
         }
     }
     public function saveDocument(EdocsRequest $edocs_request){
-        return $save_document = $this->resource_interface->createOrUpdate( Document::class,$edocs_request->validated(),$edocs_request->document_id);
+        // return $save_document = $this->resource_interface->createOrUpdate( Document::class,$edocs_request->validated(),$edocs_request->document_id);
         // $edocs_request->validate([
         //     'document_file' => 'required|mimes:pdf|max:2048', // Example: only allow PDFs with max 2MB size
         // ]);
-        if($edocs_request->hasfile('document_file') ){
-            return $this->edocs_interface->uploadFile($edocs_request->document_file,$save_document->data_id);
+        $document_id = $edocs_request->document_id;
+        if( isset( $document_id ) ){
+            $this->resource_interface->update( Document::class,$document_id,$edocs_request->validated());
+        }else{
+            $save_document = $this->resource_interface->create( Document::class,$edocs_request->validated());
+            $document_id = $save_document->data_id;
         }
-        // $this->edocs_interface->uploadFile();
+
+        if($edocs_request->hasfile('document_file') ){
+            return $this->edocs_interface->uploadFile($edocs_request->document_file,$document_id);
+        }
     }
     public function readDocumentById(Request $request){
         // return $request->all();
-        return $read_document_by_id = $this->resource_interface->readById(Document::class,$request->document_id);
-        return Storage::response( 'public/edocs/'. $document_id .'/'. $file_id);
+        $read_document_by_id = $this->resource_interface->readById(Document::class,$request->document_id);
+        // return $read_document_by_id[0]->id;
+        // return $read_document_by_id[0]->filtered_document_name;
+        // return Storage::response( 'public/edocs/'. $read_document_by_id[0]->id .'/'. $read_document_by_id[0]->filtered_document_name);
+
+        try {
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
 
     }
 

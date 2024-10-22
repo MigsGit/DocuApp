@@ -24,9 +24,9 @@
                                 <tr>
                                     <th>Action</th>
                                     <th>Status</th>
-                                    <th>Category</th>
-                                    <th class="w-50">Document Name</th>
-                                    <th class="w-50">Document</th>
+                                    <th class="w-25">Category</th>
+                                    <th class="w-75">Document Name</th>
+                                    <!-- <th class="w-50">Document</th> -->
                                     <!-- <th>Attachment</th> -->
                                     <!-- <th>Report Approvers</th> -->
                                 </tr>
@@ -135,7 +135,7 @@
         { data: 'status'},
         { data: 'category_id'},
         { data: 'document_name'},
-        { data: 'document_filename'},
+        // { data: 'document_filename'},
         // { data: 'Attachment'}
     ];
 

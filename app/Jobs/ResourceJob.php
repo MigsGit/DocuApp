@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 use Illuminate\Support\Facades\DB;
-use App\Models\Document;
 //Interface
 use App\Interfaces\ResourceInterface;
 
@@ -17,15 +16,15 @@ class ResourceJob implements ResourceInterface
         date_default_timezone_set('Asia/Manila');
         DB::beginTransaction();
         try {
-            $model::insert($data);
+            $data_id = $model::insertGetId($data);
             DB::commit();
-            return response()->json(['is_success' => 'true']);
+            return response()->json(['is_success' => 'true','data_id'=>$data_id]);
         } catch (Exception $e) {
             DB::rollback();
             return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
         }
     }
-    public function createOrUpdate( $model,array $data,$id){
+    public function createOrUpdate( $model,$data_id,array $data){
         date_default_timezone_set('Asia/Manila');
         DB::beginTransaction();
         try {
@@ -33,9 +32,8 @@ class ResourceJob implements ResourceInterface
                 $model::where('id',$id)->update($data);
                 $data_id = $id;
             }else{
-                $insert_by_id = $model::insertById($data);
+                $insert_by_id = $model::insertGetId($data);
                 $data_id = $insert_by_id;
-
             }
             DB::commit();
             return response()->json(['is_success' => 'true','data_id'=>$data_id]);
@@ -47,8 +45,8 @@ class ResourceJob implements ResourceInterface
 
     public function readByID($model,$id){
         try {
-            $data = $model::where('id',$id)->whereNull('deleted_at')->get();
-            return response()->json(['is_success' => 'true','data'=> $data]);
+            return $data = $model::where('id',$id)->whereNull('deleted_at')->get();
+            // return response()->json(['is_success' => 'true','data'=> $data]);
         } catch (Exception $e) {
             return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
         }
@@ -63,14 +61,14 @@ class ResourceJob implements ResourceInterface
     //     }
     // }
 
-    // public function update(Request $request){
-    //     return 'true' ;
-    //     try {
-    //         return response()->json(['is_success' => 'true']);
-    //     } catch (Exception $e) {
-    //         return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
-    //     }
-    // }
+    public function update($model,$data_id,array $data){
+        try {
+            $model::where('id',$data_id)->update($data);
+            return response()->json(['is_success' => 'true']);
+        } catch (Exception $e) {
+            return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
+        }
+    }
 
     // public function inactive(Request $request){
     //     return 'true' ;
