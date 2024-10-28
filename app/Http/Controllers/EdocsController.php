@@ -70,16 +70,52 @@ class EdocsController extends Controller
     public function readDocumentById(Request $request){
         // return $request->all();
         $read_document_by_id = $this->resource_interface->readById(Document::class,$request->document_id);
-        // return $read_document_by_id[0]->id;
-        // return $read_document_by_id[0]->filtered_document_name;
-        // return Storage::response( 'public/edocs/'. $read_document_by_id[0]->id .'/'. $read_document_by_id[0]->filtered_document_name);
+        $page_count = $this->pdf_service->getPageCount(storage_path('app/' . 'public/edocs/'. $read_document_by_id[0]->id .'/'. $read_document_by_id[0]->filtered_document_name));
 
-        return $pageCount = $this->pdf_service->getPageCount(storage_path('app/' . 'public/edocs/'. $read_document_by_id[0]->id .'/'. $read_document_by_id[0]->filtered_document_name));
+        return response()->json(['is_success' => 'false', 'read_document_by_id' => $read_document_by_id , 'page_count' => $page_count]);
+
         try {
         } catch (\Throwable $th) {
             //throw $th;
         }
+    }
 
+     /**
+     * Handle PDF upload and convert a specific page to an image.
+     */
+    public function convertPdfToImageByPageNumber(Request $request)
+    {
+        $request->validate([
+            // 'pdf' => 'required|mimes:pdf|max:2048',
+            'select_page' => 'required|integer|min:1',
+        ]);
+        // $pdfFile = $request->file('pdf');
+        // $filePath = $pdfFile->storeAs('public/pdf', $pdfFile->getClientOriginalName());
+        return $filePath = storage_path('app/public/images');
+        $pageNumber = $request->input('select_page');
+        $outputDir = storage_path('app/public/images');
+
+        try {
+            // $pageCount = $this->pdfService->getPageCount(storage_path('app/' . $filePath));
+
+            // if ($pageNumber > $pageCount) {
+            //     return response()->json(['success' => false, 'message' => 'Invalid page number.'], 400);
+            // }
+
+            // Convert PDF page to image
+            return  $imagePath = $this->pdfService->convertPdfPageToImage(storage_path('app/' . $filePath), $pageNumber, $outputDir);
+
+            // Return image URL to frontend
+            return response()->json([
+                'success' => true,
+                'image_url' => Storage::url('images/' . basename($imagePath)),
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
 }

@@ -76,6 +76,20 @@
                     >
                     </div>
                 </div>
+                <div class="col-12">
+                    <label class="sr-only" for="selectPage">Select Page</label>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                        <div class="input-group-text">Select Page</div>
+                        </div>
+                        <select v-model="formSaveDocument.selectPage" class="form-control" id="selectPage" @change="selectedPage">
+                            <option value="N/A" disabled>N/A</option>
+                            <option v-for="(optSelectPage,index) in formSaveDocument.optSelectPages" :key="optSelectPage" :value="optSelectPage">
+                                {{ optSelectPage }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
             </div>
         </template>
         <template #footer>
@@ -98,12 +112,13 @@
         documentId: null,
         documentName: null,
         documentFile:[],
+        selectPage: "",
+        optSelectPages: [],
     });
 
 
     onMounted( async () => {
         $('#modalSave').on('hidden.bs.modal', function (e) {
-		/* Allows the overlayed modal to be scrollable */
             documentFile.value.value = "";
         });
     })
@@ -138,6 +153,9 @@
         // { data: 'document_filename'},
         // { data: 'Attachment'}
     ];
+    formSaveDocument.value.selectPage = "N/A";
+
+
 
     /*
         Function
@@ -147,17 +165,31 @@
         // formSaveDocument.value.documentFile =  documentFile.value.files //If multiple files, required variable as array
         console.log('uploadFile',formSaveDocument.value.documentFile);
     }
+    const selectedPage  = async ()  => {
+        await axios.get('/api/convert_pdf_to_image_by_page_number',{
+            params:{
+                select_page: formSaveDocument.value.selectPage
+            }
+        }).then((response) => {
+            console.log(response);
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
     const readDocumentById = async (documentId)  => {
-        console.log('documentId',documentId);
+        formSaveDocument.value.optSelectPages = [];
         await axios.get('/api/read_document_by_id',{
             params:{
                 document_id: documentId
             }
         }).then((response) => {
-            let document_details = response.data.data;
-            formSaveDocument.value.documentName = document_details[0].document_name;
-            console.log(document_details[0].document_name);
-            console.log(response.data.is_success);
+            let document_details = response.data;
+            formSaveDocument.value.documentName = document_details.read_document_by_id[0].document_name;
+
+            //get the page thru array push
+            for (let index = 0; index < document_details.page_count; index++) {
+                formSaveDocument.value.optSelectPages.push(index+1)
+            }
         }).catch((err) => {
             console.log(err);
         });
@@ -172,8 +204,6 @@
             formData.append(`document_file[${index}]`, file);  // Ensures that each file gets a unique key
         });
 
-        // console.log('formData',formData);
-        // return;
         await axios.post('/api/save_document', formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
