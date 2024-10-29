@@ -193,23 +193,19 @@
                 select_page: formSaveDocument.value.selectPage,
                 document_id: formSaveDocument.value.documentId
             },
-            responseType: 'blob',
+            // responseType: 'blob',
         }).then((response) => {
             let data = response.data;
-            console.log(response.data instanceof Blob);
+
+            // console.log(response.data instanceof Blob);
+            console.log(response.data);
+            imageSrc.value = data.image;
+            return;
             if (response.data instanceof Blob) {
                 imageSrc.value = URL.createObjectURL(response.data);
             } else {
                 console.error("Response is not a Blob");
             }
-            // pdfImage.value = URL.createObjectURL(data.image_url);
-            // if (data.success) {
-            //     let img = document.getElementById('pdfImage');
-            //     img.src = data.image_url;
-            //     img.style.display = 'block';
-            // } else {
-            //     alert(data.message);
-            // }
         }).catch((err) => {
             console.log(err);
         });

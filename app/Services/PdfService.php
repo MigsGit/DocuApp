@@ -18,7 +18,6 @@ class PdfService
      */
     public function getPageCount(string $filePath)
     {
-        // return 'true';
         $pdf = new Fpdi();
 
         if (!file_exists($filePath)) {
@@ -30,56 +29,79 @@ class PdfService
     }
 
     /**
-     * Convert a specific page of a PDF to an image.
+     * Convert a specific PDF page to an image and get its dimensions.
      *
-     * @param string $filePath
-     * @param int $pageNumber
-     * @param string $outputDir
-     * @return string
+     * @param string $filePath Path to the PDF file
+     * @param int $pageNumber Page number to convert
+     * @return array Image data, width, and height
+     * @throws \Exception If the conversion fails
      */
-    public function convertPdfPageToImage(string $filePath, int $pageNumber, string $outputDir): string
+    public function convertPdfPageToImageTest(string $filePath, int $pageNumber, string $outputDir)
     {
-        return $filePath;
         if (!file_exists($filePath)) {
             throw new Exception('PDF file not found.');
         }
-
         $imagick = new Imagick();
-        $imagick->setResolution(300, 300);
-        $imagick->readImage("{$filePath}[{$pageNumber}]");
-        // $imagick->readImage($filePath,$pageNumber);
-
-        $imagePath = $outputDir . '/page_' . $pageNumber . '.jpg';
-        $imagick->setImageFormat('jpg');
-        $imagick->writeImage($imagePath);
-
-        $imagick->clear();
-        $imagick->destroy();
-
-        return $imagePath;
-    }
-    public function convertPdfPageToImageTest($filePath, int $pageNumber, string $outputDir): string
-    {
-        // return $filePath;
-        if (!file_exists($filePath)) {
-            throw new Exception('PDF file not found.');
-        }
-
-        $imagick = new Imagick();
-        // $imagick->setResolution(150, 150); // Set desired resolution
+        /**
+         * Set desired resolution
+        */
         $imagick->setResolution(300, 300);
 
-
-        // Read specific page
-        // $imagick->readImage("{$filePath}[{$pageNumber}]");
+        /**
+         * Read specific page
+         */
 		$imagick->readImage($filePath.'['.($pageNumber).']');
+        $width = $imagick->getImageWidth();
+        $height = $imagick->getImageHeight();
 
-
-        // Convert to an image
+        /**
+         * Convert to an image
+         */
         $imagick->setImageFormat('jpeg');
-        return $imageData = $imagick->getImagesBlob();
 
-        // return response($imageData, 200)
-        //     ->header('Content-Type', 'image/jpeg');
+        /**
+         * PDF pages can contain transparency,
+         * which sometimes renders as black in image formats like JPEG.
+         * To fix this, set a white background color before converting.
+         */
+
+        $imagick->setImageAlphaChannel(\Imagick:: ALPHACHANNEL_REMOVE);
+
+        /**
+         * Flattening removes any transparency layers that might be causing issues:
+         */
+
+        $imagick->mergeImageLayers(\Imagick::LAYERMETHOD_FLATTEN);
+        /**
+         * To improve quality, set a higher resolution before reading the PDF page with Imagick.
+         * A higher resolution will result in a clearer, higher-quality image but also a larger
+         * file size.
+         */
+
+        $imagick->setImageCompressionQuality(100);
+
+        /**
+         * Optimize for web (optional)
+        */
+
+        $imagick->stripImage();
+        /**
+         * ! Error: Malformed UTF-8 characters, possibly incorrectly encoded
+         * ! Error: When return as json
+         * @param string $imageData Return Image
+         * $imageData = $imagick->getImagesBlob();
+         * return response($imagePath, 200) ->header('Content-Type', 'image/jpeg');
+         */
+
+        // Get image data as base64 Blob
+        $imageData = base64_encode($imagick->getImagesBlob());
+        /**
+         * Return array insted of string
+        */
+        return [
+            'image' => 'data:image/jpeg;base64,' . $imageData,
+            'width' => $width,
+            'height' => $height,
+        ];
     }
 }

@@ -108,8 +108,16 @@ class EdocsController extends Controller
 
             // Convert PDF page to image
             $imagePath = $this->pdf_service->convertPdfPageToImageTest($filePath, $pageNumber-1, $outputDir);
-            return response($imagePath, 200)
-            ->header('Content-Type', 'image/jpeg');
+            return response()->json($imagePath);
+            
+            // return response()->json([
+            //     // 'image' => base64_encode($imageData), // Optionally encode for JSON response
+            //     'image' => 'data:image/jpeg;base64,' . $imageData,
+            //     'image_width' => $width,
+            //     'image_height' => $height
+            // ]);
+            // return response($imagePath, 200)
+            // ->header('Content-Type', 'image/jpeg');
             // // Return image URL to frontend
             // return response()->json([
             //     'is_success' => true,
