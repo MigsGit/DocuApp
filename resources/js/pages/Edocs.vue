@@ -90,6 +90,28 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-12">
+                    <div v-if="imageSrc" class="pdf-image-container">
+                        <img
+                            :src="imageSrc"
+                            alt="PDF Page"
+                            ref="pdfImage"
+                            style="width: 100%;
+                            height: 100%;"
+                        />
+                        <!-- <div
+                            v-if="showBox"
+                            :style="{ top: boxY + 'px', left: boxX + 'px' }"
+                            class="click-box"
+                        ></div> -->
+                    </div>
+                    <!--
+                            @click="getCoordinates"
+                        <div id="image-container" style="margin-top: 20px;">
+                        <img id="pdf-image" src="" alt="PDF Page" style="display:none;">
+                        <img ref="pdfImage" id="pdfImage" src="" alt="PDF Page">
+                    </div> -->
+                </div>
             </div>
         </template>
         <template #footer>
@@ -108,6 +130,7 @@
 
     const documentFile = ref([]);
     const tblEdocs = ref(null);
+    const imageSrc = ref(null);
     const formSaveDocument = ref({
         documentId: null,
         documentName: null,
@@ -163,15 +186,30 @@
     const uploadFile = async (event)  => {
         formSaveDocument.value.documentFile =  Array.from(event.target.files);
         // formSaveDocument.value.documentFile =  documentFile.value.files //If multiple files, required variable as array
-        console.log('uploadFile',formSaveDocument.value.documentFile);
     }
     const selectedPage  = async ()  => {
         await axios.get('/api/convert_pdf_to_image_by_page_number',{
             params:{
-                select_page: formSaveDocument.value.selectPage
-            }
+                select_page: formSaveDocument.value.selectPage,
+                document_id: formSaveDocument.value.documentId
+            },
+            responseType: 'blob',
         }).then((response) => {
-            console.log(response);
+            let data = response.data;
+            console.log(response.data instanceof Blob);
+            if (response.data instanceof Blob) {
+                imageSrc.value = URL.createObjectURL(response.data);
+            } else {
+                console.error("Response is not a Blob");
+            }
+            // pdfImage.value = URL.createObjectURL(data.image_url);
+            // if (data.success) {
+            //     let img = document.getElementById('pdfImage');
+            //     img.src = data.image_url;
+            //     img.style.display = 'block';
+            // } else {
+            //     alert(data.message);
+            // }
         }).catch((err) => {
             console.log(err);
         });
@@ -211,7 +249,6 @@
         }).then((response) => {
             console.log(response);
             tblEdocs.value.dt.draw();
-
         }).catch((err) => {
             console.log(err);
         });
@@ -220,4 +257,9 @@
 </script>
 <style  src="@vueform/multiselect/themes/default.css">
     @import 'datatables.net-bs5';
+    .pdf-image-container {
+        position: relative;
+
+    }
+
 </style>

@@ -91,9 +91,13 @@ class EdocsController extends Controller
         ]);
         // $pdfFile = $request->file('pdf');
         // $filePath = $pdfFile->storeAs('public/pdf', $pdfFile->getClientOriginalName());
-        return $filePath = storage_path('app/public/images');
+        $documents = Document::where('id',$request->document_id)->get();
+        $filePath = storage_path('app/public/edocs/'.$documents[0]->id.'/'.$documents[0]->filtered_document_name);
         $pageNumber = $request->input('select_page');
         $outputDir = storage_path('app/public/images');
+        // $filePath = Storage::response('public/edocs/'.$documents[0]->id.'/'.$documents[0]->filtered_document_name);
+        // $outputDir = Storage::response('public/images');
+
 
         try {
             // $pageCount = $this->pdfService->getPageCount(storage_path('app/' . $filePath));
@@ -103,18 +107,22 @@ class EdocsController extends Controller
             // }
 
             // Convert PDF page to image
-            return  $imagePath = $this->pdfService->convertPdfPageToImage(storage_path('app/' . $filePath), $pageNumber, $outputDir);
-
-            // Return image URL to frontend
-            return response()->json([
-                'success' => true,
-                'image_url' => Storage::url('images/' . basename($imagePath)),
-            ]);
+            $imagePath = $this->pdf_service->convertPdfPageToImageTest($filePath, $pageNumber-1, $outputDir);
+            return response($imagePath, 200)
+            ->header('Content-Type', 'image/jpeg');
+            // // Return image URL to frontend
+            // return response()->json([
+            //     'is_success' => true,
+            //     // 'image_url' => Storage::url('images/' . basename($imagePath)),
+            //     'image_url' => $imagePath,
+            //     // 'image_url' => Storage::response('public/images'. basename($imagePath)),
+            // ]);
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(),
-            ], 500);
+            throw $e;
+            // return response()->json([
+            //     'is_success' => false,
+            //     'message' => $e->getMessage(),
+            // ], 500);
         }
     }
 
