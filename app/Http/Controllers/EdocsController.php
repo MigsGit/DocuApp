@@ -81,56 +81,25 @@ class EdocsController extends Controller
     }
 
      /**
-     * Handle PDF upload and convert a specific page to an image.
+     * @param $request Handle PDF upload and convert a specific page to an image.
      */
     public function convertPdfToImageByPageNumber(Request $request)
     {
-        $request->validate([
-            // 'pdf' => 'required|mimes:pdf|max:2048',
-            'select_page' => 'required|integer|min:1',
-        ]);
-        // $pdfFile = $request->file('pdf');
-        // $filePath = $pdfFile->storeAs('public/pdf', $pdfFile->getClientOriginalName());
-        $documents = Document::where('id',$request->document_id)->get();
-        $filePath = storage_path('app/public/edocs/'.$documents[0]->id.'/'.$documents[0]->filtered_document_name);
-        $pageNumber = $request->input('select_page');
-        $outputDir = storage_path('app/public/images');
-        // $filePath = Storage::response('public/edocs/'.$documents[0]->id.'/'.$documents[0]->filtered_document_name);
-        // $outputDir = Storage::response('public/images');
-
-
         try {
-            // $pageCount = $this->pdfService->getPageCount(storage_path('app/' . $filePath));
+            $request->validate([
+                // 'pdf' => 'required|mimes:pdf|max:2048',
+                'select_page' => 'required|integer|min:1',
+            ]);
 
-            // if ($pageNumber > $pageCount) {
-            //     return response()->json(['success' => false, 'message' => 'Invalid page number.'], 400);
-            // }
-
+            $documents = Document::where('id',$request->document_id)->get();
+            $pageNumber = $request->input('select_page');
+            $filePath = storage_path('app/public/edocs/'.$documents[0]->id.'/'.$documents[0]->filtered_document_name);
+            $outputDir = storage_path('app/public/images');
             // Convert PDF page to image
             $imagePath = $this->pdf_service->convertPdfPageToImageTest($filePath, $pageNumber-1, $outputDir);
             return response()->json($imagePath);
-            
-            // return response()->json([
-            //     // 'image' => base64_encode($imageData), // Optionally encode for JSON response
-            //     'image' => 'data:image/jpeg;base64,' . $imageData,
-            //     'image_width' => $width,
-            //     'image_height' => $height
-            // ]);
-            // return response($imagePath, 200)
-            // ->header('Content-Type', 'image/jpeg');
-            // // Return image URL to frontend
-            // return response()->json([
-            //     'is_success' => true,
-            //     // 'image_url' => Storage::url('images/' . basename($imagePath)),
-            //     'image_url' => $imagePath,
-            //     // 'image_url' => Storage::response('public/images'. basename($imagePath)),
-            // ]);
         } catch (\Exception $e) {
             throw $e;
-            // return response()->json([
-            //     'is_success' => false,
-            //     'message' => $e->getMessage(),
-            // ], 500);
         }
     }
 

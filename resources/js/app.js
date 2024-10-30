@@ -1,4 +1,5 @@
 /* Node Modules/Plugins */
+import "./bootstrap";
 import {createApp} from 'vue'
 import { library } from '@fortawesome/fontawesome-svg-core' /* import the fontawesome core | npm i @fortawesome/fontawesome-svg-core*/
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome' /* import font awesome icon component | npm i @fortawesome/vue-fontawesome*/

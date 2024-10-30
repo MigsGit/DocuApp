@@ -6,7 +6,8 @@
             <div class="col-9">
                 <div class="card mt-3">
                     <div class="card-body overflow-auto">
-                        <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal"><i class="fas fa-plus"></i> Add Ticket</button>
+                        <!-- <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal"><i class="fas fa-plus"></i> Add Ticket</button> -->
+                        <button type="button" class="btn btn-primary" style="float: right !important;"  @click="showModal('modal1')"><i class="fas fa-plus"></i> Add Ticket</button>
                         <br><br>
                         <DataTable
                             ref="tblEdocs"
@@ -38,8 +39,19 @@
         </div>
     </div>
      <!-- @add-event="" -->
-    <Modal icon="fa-user" title="Resolution Procedure" @add-event="saveDocument">
-    <!-- <Modal icon="fa-user" title="Module"> -->
+    <!-- <Modal icon="fa-user" title="Resolution Procedure" id="modalSaveDocument" @add-event="saveDocument"> -->
+    <!-- <Modal  v-if="activeId === 'modal1'"
+      :title="'Modal 1'"
+      :icon="'fa-user'"
+      :id="'modal1'"
+      :activeId="activeId"
+      @close="closeModal"
+      > -->
+    <Modal icon="fa-user" title="Module"
+        :id="'modal1'"
+      :activeId="activeId"
+      v-if="activeId === 'modal1'"
+      >
         <template #body>
             <div class="form-row align-items-center">
                 <div class="col-12">
@@ -119,6 +131,7 @@
             <button type="submit" class="btn btn-success btn-sm"><li class="fas fa-save"></li> Save</button>
         </template>
     </Modal> <!-- @add-event="" -->
+
 </template>
 
 <script setup>
@@ -128,9 +141,23 @@
     import { onMounted, ref, reactive, watch,nextTick } from "vue";
     import Modal from '../components/Modal.vue'
 
-    const documentFile = ref([]);
+    const objModalSaveDocument = "";
+    const modalSaveDocument = ref(null);
+
+    const activeId = ref(null);
+
+    const showModal = (id) => {
+        console.log('dsada',id)
+        activeId.value = id;
+    };
+
+    const closeModal = () => {
+        activeId.value = null;
+    };
+
     const tblEdocs = ref(null);
     const imageSrc = ref(null);
+    const documentFile = ref([]);
     const formSaveDocument = ref({
         documentId: null,
         documentName: null,
@@ -139,13 +166,16 @@
         optSelectPages: [],
     });
 
+    formSaveDocument.value.selectPage = "N/A";
 
-    onMounted( async () => {
+    onMounted( () => {
+        // objModalSaveDocument = new Modal(modalSaveDocument,{});
         $('#modalSave').on('hidden.bs.modal', function (e) {
             documentFile.value.value = "";
         });
     })
 
+    // objModalSaveDocument.show();
     const columns =[
         {
             data: 'get_action',
@@ -176,9 +206,6 @@
         // { data: 'document_filename'},
         // { data: 'Attachment'}
     ];
-    formSaveDocument.value.selectPage = "N/A";
-
-
 
     /*
         Function
@@ -193,19 +220,9 @@
                 select_page: formSaveDocument.value.selectPage,
                 document_id: formSaveDocument.value.documentId
             },
-            // responseType: 'blob',
         }).then((response) => {
             let data = response.data;
-
-            // console.log(response.data instanceof Blob);
-            console.log(response.data);
             imageSrc.value = data.image;
-            return;
-            if (response.data instanceof Blob) {
-                imageSrc.value = URL.createObjectURL(response.data);
-            } else {
-                console.error("Response is not a Blob");
-            }
         }).catch((err) => {
             console.log(err);
         });
