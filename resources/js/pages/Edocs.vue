@@ -6,8 +6,8 @@
             <div class="col-9">
                 <div class="card mt-3">
                     <div class="card-body overflow-auto">
-                        <!-- <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal"><i class="fas fa-plus"></i> Add Ticket</button> -->
-                        <button type="button" class="btn btn-primary" style="float: right !important;"  @click="showModal('modal1')"><i class="fas fa-plus"></i> Add Ticket</button>
+                        <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal"><i class="fas fa-plus"></i> Add Ticket</button>
+                        <!-- <button type="button" class="btn btn-primary" style="float: right !important;"  @click="showModal('modal1')"><i class="fas fa-plus"></i> Add Ticket</button> -->
                         <br><br>
                         <DataTable
                             ref="tblEdocs"
@@ -38,20 +38,7 @@
             </div>
         </div>
     </div>
-     <!-- @add-event="" -->
-    <!-- <Modal icon="fa-user" title="Resolution Procedure" id="modalSaveDocument" @add-event="saveDocument"> -->
-    <!-- <Modal  v-if="activeId === 'modal1'"
-      :title="'Modal 1'"
-      :icon="'fa-user'"
-      :id="'modal1'"
-      :activeId="activeId"
-      @close="closeModal"
-      > -->
-    <Modal icon="fa-user" title="Module"
-        :id="'modal1'"
-      :activeId="activeId"
-      v-if="activeId === 'modal1'"
-      >
+    <ModalComponent icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument">
         <template #body>
             <div class="form-row align-items-center">
                 <div class="col-12">
@@ -102,6 +89,17 @@
                         </select>
                     </div>
                 </div>
+
+            </div>
+        </template>
+        <template #footer>
+            <button type="button" id= "closeBtn" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-success btn-sm"><li class="fas fa-save"></li> Save</button>
+        </template>
+    </ModalComponent> <!-- @add-event="" -->
+    <ModalComponent icon="fa-user" title="Resolution Procedure" id="modalOpenPdfImage">
+        <template #body>
+            <div class="form-row align-items-center">
                 <div class="col-12">
                     <div v-if="imageSrc" class="pdf-image-container">
                         <img
@@ -109,29 +107,23 @@
                             alt="PDF Page"
                             ref="pdfImage"
                             style="width: 100%;
-                            height: 100%;"
-                        />
-                        <!-- <div
-                            v-if="showBox"
-                            :style="{ top: boxY + 'px', left: boxX + 'px' }"
-                            class="click-box"
-                        ></div> -->
-                    </div>
-                    <!--
+                            height: 100%;
+                            border: solid 1px;"
                             @click="getCoordinates"
-                        <div id="image-container" style="margin-top: 20px;">
-                        <img id="pdf-image" src="" alt="PDF Page" style="display:none;">
-                        <img ref="pdfImage" id="pdfImage" src="" alt="PDF Page">
-                    </div> -->
+                        />
+                        <div
+                            v-if="showBox"
+                            :style="{ top: boxY + 'px', left: boxX + 'px'}"
+                            class="click-box"
+                        >Signature will be here</div>
+                    </div>
                 </div>
             </div>
         </template>
         <template #footer>
             <button type="button" id= "closeBtn" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-success btn-sm"><li class="fas fa-save"></li> Save</button>
         </template>
-    </Modal> <!-- @add-event="" -->
-
+    </ModalComponent>
 </template>
 
 <script setup>
@@ -139,25 +131,18 @@
     import DataTablesCore from 'datatables.net-bs5';
     DataTable.use(DataTablesCore);
     import { onMounted, ref, reactive, watch,nextTick } from "vue";
-    import Modal from '../components/Modal.vue'
+    import ModalComponent from '../components/Modal.vue'
 
-    const objModalSaveDocument = "";
-    const modalSaveDocument = ref(null);
-
-    const activeId = ref(null);
-
-    const showModal = (id) => {
-        console.log('dsada',id)
-        activeId.value = id;
-    };
-
-    const closeModal = () => {
-        activeId.value = null;
-    };
-
+    const objModalSaveDocument = ref(null);
+    const objModalOpenPdfImage = ref(null);
     const tblEdocs = ref(null);
     const imageSrc = ref(null);
     const documentFile = ref([]);
+
+    const showBox = ref(false);
+    const boxX = ref(0);
+    const boxY = ref(0);
+
     const formSaveDocument = ref({
         documentId: null,
         documentName: null,
@@ -169,13 +154,14 @@
     formSaveDocument.value.selectPage = "N/A";
 
     onMounted( () => {
-        // objModalSaveDocument = new Modal(modalSaveDocument,{});
+        //modalOpenPdfImage
+        objModalSaveDocument.value = new Modal(document.querySelector("#modalCreateDocument"),{});
+        objModalOpenPdfImage.value = new Modal(document.querySelector("#modalOpenPdfImage"),{});
         $('#modalSave').on('hidden.bs.modal', function (e) {
             documentFile.value.value = "";
         });
     })
 
-    // objModalSaveDocument.show();
     const columns =[
         {
             data: 'get_action',
@@ -188,6 +174,7 @@
                         let documentId = this.getAttribute('data-id')
                         formSaveDocument.value.documentId = documentId;
                         readDocumentById(documentId);
+                        objModalSaveDocument.value.show()
                     });
                 }
                 // if((btnViewTicket !== null)){
@@ -203,13 +190,24 @@
         { data: 'status'},
         { data: 'category_id'},
         { data: 'document_name'},
-        // { data: 'document_filename'},
-        // { data: 'Attachment'}
     ];
 
     /*
         Function
     */
+    const getCoordinates = (event) => {
+      const imageElement = event.target;
+      const rect = imageElement.getBoundingClientRect();
+
+      boxX.value = event.clientX - rect.left;
+      boxY.value = event.clientY - rect.top;
+
+      showBox.value = true;
+      console.log('dsdad',showBox.value);
+      console.log('boxX',boxX.value);
+      console.log('boxY',boxY.value);
+      console.log('rect',rect);
+    };
     const uploadFile = async (event)  => {
         formSaveDocument.value.documentFile =  Array.from(event.target.files);
         // formSaveDocument.value.documentFile =  documentFile.value.files //If multiple files, required variable as array
@@ -220,8 +218,15 @@
                 select_page: formSaveDocument.value.selectPage,
                 document_id: formSaveDocument.value.documentId
             },
+            transformRequest: [(data, headers) => {
+                // Modify the request config here (similar to beforeSend in jQuery)
+                headers['Authorization'] = 'Bearer your-token';
+                console.log('Request config modified before sending:', headers);
+                // return data;
+            }]
         }).then((response) => {
             let data = response.data;
+            objModalOpenPdfImage.value.show();
             imageSrc.value = data.image;
         }).catch((err) => {
             console.log(err);
@@ -233,7 +238,8 @@
             params:{
                 document_id: documentId
             }
-        }).then((response) => {
+        })
+        .then((response) => {
             let document_details = response.data;
             formSaveDocument.value.documentName = document_details.read_document_by_id[0].document_name;
 
@@ -266,13 +272,19 @@
             console.log(err);
         });
     }
-
 </script>
-<style  src="@vueform/multiselect/themes/default.css">
+<!-- <style  src="@vueform/multiselect/themes/default.css">
     @import 'datatables.net-bs5';
+</style> -->
+<style>
     .pdf-image-container {
         position: relative;
 
     }
-
+    .click-box {
+        height:4%;
+        border: solid 1px;
+        position:absolute;
+        color:black
+    }
 </style>
