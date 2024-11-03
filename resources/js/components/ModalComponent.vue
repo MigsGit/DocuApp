@@ -1,7 +1,7 @@
 <template>
     <!-- <div class="modal fade" ref="modalSave" id="modalSave" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true"> -->
     <div class="modal fade" :id="id" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <font-awesome-icon :icon="icon"/>&nbsp<h5 class="modal-title" id="staticBackdropLabel"> {{ title }}</h5>
@@ -39,3 +39,11 @@
         },
     })
 </script>
+
+<style>
+.modal-dialog-scrollable .modal-body {
+    max-height: calc(100vh - 200px); /* Adjust this value as needed */
+    overflow-y: auto;
+}
+
+</style>

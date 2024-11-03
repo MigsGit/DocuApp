@@ -4,6 +4,7 @@ export default function edocs()
     const objModalSaveDocument = ref(null);
     const objModalOpenPdfImage = ref(null);
     const objModalLoading = ref(null);
+    const isModalVisible = ref(false);
 
     const showBox = ref(false);
     const boxX = ref(0);
@@ -59,12 +60,15 @@ export default function edocs()
                 // Modify the request config here (similar to beforeSend in jQuery)
                 headers['Authorization'] = 'Bearer your-token';
                 console.log('Request config modified before sending:', headers);
-                objModalLoading.value.show();
+                // objModalLoading.value.show();
+                isModalVisible.value = true;
             }]
         }).then((response) => {
             let data = response.data;
             objModalOpenPdfImage.value.show();
-            objModalLoading.value.hide();
+            // objModalLoading.value.hide();
+            isModalVisible.value = false;
+
             imageSrc.value = data.image;
         }).catch((err) => {
             console.log(err);
@@ -78,11 +82,13 @@ export default function edocs()
                 document_id: documentId
             },
             transformRequest: [(data, headers) => {
-                objModalLoading.value.show();
+                // objModalLoading.value.show();
+                isModalVisible.value = true;
             }]
         })
         .then((response) => {
-            objModalLoading.value.hide();
+            // objModalLoading.value.hide();
+            isModalVisible.value = false;
             let document_details = response.data;
             formSaveDocument.value.documentName = document_details.read_document_by_id[0].document_name;
 
@@ -104,6 +110,7 @@ export default function edocs()
         objModalOpenPdfImage,
         objModalSaveDocument,
         objModalLoading,
+        isModalVisible,
         boxX,
         boxY,
         showBox,

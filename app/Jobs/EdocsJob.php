@@ -30,11 +30,6 @@ class EdocsJob implements EdocsInterface
             $arr_original_filename[] =$original_filename;
             $arr_filtered_filename[] =$filtered_filename;
         }
-        // APilotRun::where('id', $id)
-        // ->update([
-        //     'filename' => implode(' | ',$arr_original_filename),
-        //     'filtered_filename' => implode(' | ',$arr_filtered_filename)
-        // ]);
         return [
             'filtered_document_name' => $filtered_filename
         ];

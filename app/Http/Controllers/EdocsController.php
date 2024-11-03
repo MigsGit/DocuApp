@@ -67,7 +67,7 @@ class EdocsController extends Controller
             $arr_upload_file = $this->edocs_interface->uploadFile($edocs_request->document_file,$document_id);
             $this->resource_interface->update( Document::class,$document_id,$arr_upload_file);
         }
-        return ;
+        return response()->json(['is_success' => 'true']);
     }
     public function readDocumentById(Request $request){
         // return $request->all();

@@ -130,7 +130,7 @@
         </template>
     </ModalComponent>
 
-    <LoadingComponent loading-msg="Loading, please wait !" id="modalLoading">
+    <LoadingComponent v-if="isModalVisible" loading-msg="Loading, please wait !" id="modalLoading">
     </LoadingComponent>
 </template>
 
@@ -153,6 +153,7 @@
         objModalOpenPdfImage,
         objModalSaveDocument,
         objModalLoading,
+        isModalVisible,
         imageSrc,
         formSaveDocument,
         tblEdocs,
@@ -190,19 +191,21 @@
     ];
     // const isLoading = ref(false);
 
+
+
     formSaveDocument.value.selectPage = "N/A";
 
     onMounted( () => {
         //modalOpenPdfImage
         objModalSaveDocument.value = new Modal(document.querySelector("#modalCreateDocument"),{});
         objModalOpenPdfImage.value = new Modal(document.querySelector("#modalOpenPdfImage"),{});
-        objModalLoading.value = new Modal(document.querySelector("#modalLoading"),{});
+        // objModalLoading.value = new Modal(document.querySelector("#modalLoading"),{});
 
-        // console.log(objModalSaveDocument.value);
-        console.log('modalLoading',$('#modalLoading'));
-
-        $('#modalSave').on('hidden.bs.modal', function (e) {
+        $('#modalCreateDocument').on('hidden.bs.modal', function (e) {
             documentFile.value.value = "";
+        });
+        $('#modalOpenPdfImage').on('hidden.bs.modal', function (e) {
+            formSaveDocument.value.selectPage = "N/A";
         });
     })
 
@@ -233,13 +236,9 @@
 
 
 </script>
-<!-- <style  src="@vueform/multiselect/themes/default.css">
-    @import 'datatables.net-bs5';
-</style> -->
 <style>
     .pdf-image-container {
         position: relative;
-
     }
     .click-box {
         height:4%;
