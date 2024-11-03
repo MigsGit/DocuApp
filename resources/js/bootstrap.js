@@ -27,7 +27,9 @@ window.Chart = Chart;
 
 try {
     window.$ = $;
-    console.log($)
+    // console.log($)
+    console.log($('#modalLoading'));
+
 } catch (e) {
     console.log("JQUERY ERROR: " + e);
 }

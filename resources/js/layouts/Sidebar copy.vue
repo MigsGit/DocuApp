@@ -152,11 +152,11 @@
 </template>
 
 <script>
-    import sbadmin2 from '../composables/sb-admin-2.js'
+    // import sbadmin2 from '../composables/sb-admin-2.js'
     import {onBeforeMount,version } from 'vue'
 
     onBeforeMount( async () => {
-        await sbadmin2.init();
+        // await sbadmin2.init();
         // console.log($("#sidebarToggle, #sidebarToggleTop"));
         // console.log(version);
     })

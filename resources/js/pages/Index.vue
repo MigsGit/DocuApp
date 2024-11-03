@@ -59,3 +59,4 @@
 //   },
 
 </style>
+../composables/sb-admin-2_2.js../composables/sb-admin-2_2.js

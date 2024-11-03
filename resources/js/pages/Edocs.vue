@@ -6,7 +6,7 @@
             <div class="col-9">
                 <div class="card mt-3">
                     <div class="card-body overflow-auto">
-                        <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal"><i class="fas fa-plus"></i> Add Ticket</button>
+                        <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal"><i class="fas fa-plus"></i> Add</button>
                         <!-- <button type="button" class="btn btn-primary" style="float: right !important;"  @click="showModal('modal1')"><i class="fas fa-plus"></i> Add Ticket</button> -->
                         <br><br>
                         <DataTable
@@ -38,6 +38,7 @@
             </div>
         </div>
     </div>
+
     <ModalComponent icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument">
         <template #body>
             <div class="form-row align-items-center">
@@ -66,6 +67,7 @@
                         <div class="input-group-text">Document File</div>
                         </div>
                         <input
+                        accept=".pdf"
                         id="fileThumbnail"
                         class="form-control"
                         ref="documentFile"
@@ -94,7 +96,10 @@
         </template>
         <template #footer>
             <button type="button" id= "closeBtn" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-success btn-sm"><li class="fas fa-save"></li> Save</button>
+            <button type="submit" class="btn btn-success btn-sm"><li class="fas fa-save"></li>
+                 Save
+                 <!-- <span v-show="isLoading">Uploading... <i class="fa fa-spinner fa-pulse"></i></span> -->
+            </button>
         </template>
     </ModalComponent> <!-- @add-event="" -->
     <ModalComponent icon="fa-user" title="Resolution Procedure" id="modalOpenPdfImage">
@@ -124,6 +129,9 @@
             <button type="button" id= "closeBtn" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
         </template>
     </ModalComponent>
+
+    <LoadingComponent loading-msg="Loading, please wait !" id="modalLoading">
+    </LoadingComponent>
 </template>
 
 <script setup>
@@ -131,36 +139,25 @@
     import DataTablesCore from 'datatables.net-bs5';
     DataTable.use(DataTablesCore);
     import { onMounted, ref, reactive, watch,nextTick } from "vue";
-    import ModalComponent from '../components/Modal.vue'
-
-    const objModalSaveDocument = ref(null);
-    const objModalOpenPdfImage = ref(null);
-    const tblEdocs = ref(null);
-    const imageSrc = ref(null);
-    const documentFile = ref([]);
-
-    const showBox = ref(false);
-    const boxX = ref(0);
-    const boxY = ref(0);
-
-    const formSaveDocument = ref({
-        documentId: null,
-        documentName: null,
-        documentFile:[],
-        selectPage: "",
-        optSelectPages: [],
-    });
-
-    formSaveDocument.value.selectPage = "N/A";
-
-    onMounted( () => {
-        //modalOpenPdfImage
-        objModalSaveDocument.value = new Modal(document.querySelector("#modalCreateDocument"),{});
-        objModalOpenPdfImage.value = new Modal(document.querySelector("#modalOpenPdfImage"),{});
-        $('#modalSave').on('hidden.bs.modal', function (e) {
-            documentFile.value.value = "";
-        });
-    })
+    import ModalComponent from '../components/ModalComponent.vue'
+    import LoadingComponent from '../components/LoadingComponent.vue'
+    import edocs from "../composables/edocs";
+    const {
+        uploadFile,
+        getCoordinates,
+        selectedPage,
+        readDocumentById,
+        boxX,
+        boxY,
+        showBox,
+        objModalOpenPdfImage,
+        objModalSaveDocument,
+        objModalLoading,
+        imageSrc,
+        formSaveDocument,
+        tblEdocs,
+        documentFile,
+    } = edocs()
 
     const columns =[
         {
@@ -191,66 +188,27 @@
         { data: 'category_id'},
         { data: 'document_name'},
     ];
+    // const isLoading = ref(false);
+
+    formSaveDocument.value.selectPage = "N/A";
+
+    onMounted( () => {
+        //modalOpenPdfImage
+        objModalSaveDocument.value = new Modal(document.querySelector("#modalCreateDocument"),{});
+        objModalOpenPdfImage.value = new Modal(document.querySelector("#modalOpenPdfImage"),{});
+        objModalLoading.value = new Modal(document.querySelector("#modalLoading"),{});
+
+        // console.log(objModalSaveDocument.value);
+        console.log('modalLoading',$('#modalLoading'));
+
+        $('#modalSave').on('hidden.bs.modal', function (e) {
+            documentFile.value.value = "";
+        });
+    })
 
     /*
         Function
     */
-    const getCoordinates = (event) => {
-      const imageElement = event.target;
-      const rect = imageElement.getBoundingClientRect();
-
-      boxX.value = event.clientX - rect.left;
-      boxY.value = event.clientY - rect.top;
-
-      showBox.value = true;
-      console.log('dsdad',showBox.value);
-      console.log('boxX',boxX.value);
-      console.log('boxY',boxY.value);
-      console.log('rect',rect);
-    };
-    const uploadFile = async (event)  => {
-        formSaveDocument.value.documentFile =  Array.from(event.target.files);
-        // formSaveDocument.value.documentFile =  documentFile.value.files //If multiple files, required variable as array
-    }
-    const selectedPage  = async ()  => {
-        await axios.get('/api/convert_pdf_to_image_by_page_number',{
-            params:{
-                select_page: formSaveDocument.value.selectPage,
-                document_id: formSaveDocument.value.documentId
-            },
-            transformRequest: [(data, headers) => {
-                // Modify the request config here (similar to beforeSend in jQuery)
-                headers['Authorization'] = 'Bearer your-token';
-                console.log('Request config modified before sending:', headers);
-                // return data;
-            }]
-        }).then((response) => {
-            let data = response.data;
-            objModalOpenPdfImage.value.show();
-            imageSrc.value = data.image;
-        }).catch((err) => {
-            console.log(err);
-        });
-    }
-    const readDocumentById = async (documentId)  => {
-        formSaveDocument.value.optSelectPages = [];
-        await axios.get('/api/read_document_by_id',{
-            params:{
-                document_id: documentId
-            }
-        })
-        .then((response) => {
-            let document_details = response.data;
-            formSaveDocument.value.documentName = document_details.read_document_by_id[0].document_name;
-
-            //get the page thru array push
-            for (let index = 0; index < document_details.page_count; index++) {
-                formSaveDocument.value.optSelectPages.push(index+1)
-            }
-        }).catch((err) => {
-            console.log(err);
-        });
-    }
     const saveDocument = async ()  => {
         let formData = new FormData();
         formData.append("document_id", formSaveDocument.value.documentId);
@@ -272,6 +230,8 @@
             console.log(err);
         });
     }
+
+
 </script>
 <!-- <style  src="@vueform/multiselect/themes/default.css">
     @import 'datatables.net-bs5';

@@ -64,8 +64,10 @@ class EdocsController extends Controller
         }
 
         if($edocs_request->hasfile('document_file') ){
-            return $this->edocs_interface->uploadFile($edocs_request->document_file,$document_id);
+            $arr_upload_file = $this->edocs_interface->uploadFile($edocs_request->document_file,$document_id);
+            $this->resource_interface->update( Document::class,$document_id,$arr_upload_file);
         }
+        return ;
     }
     public function readDocumentById(Request $request){
         // return $request->all();

@@ -62,11 +62,17 @@ class ResourceJob implements ResourceInterface
     // }
 
     public function update($model,$data_id,array $data){
+
+        date_default_timezone_set('Asia/Manila');
+        DB::beginTransaction();
         try {
             $model::where('id',$data_id)->update($data);
             return response()->json(['is_success' => 'true']);
+            DB::commit();
+            return response()->json(['is_success' => 'true','data_id'=>$data_id]);
         } catch (Exception $e) {
-            return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
+            DB::rollback();
+            throw $e;
         }
     }
 

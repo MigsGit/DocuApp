@@ -35,6 +35,9 @@ class EdocsJob implements EdocsInterface
         //     'filename' => implode(' | ',$arr_original_filename),
         //     'filtered_filename' => implode(' | ',$arr_filtered_filename)
         // ]);
+        return [
+            'filtered_document_name' => $filtered_filename
+        ];
     }
     public function slug($string, $slug, $extra)
 	{
