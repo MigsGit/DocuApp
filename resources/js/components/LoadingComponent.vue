@@ -4,8 +4,8 @@
     <!-- Loading Spinner -->
     <!-- <div class="modal" :id="id" data-backdrop="static"> -->
 
-    <!-- v-if="isModalVisible" -->
     <div
+      v-if="isModalVisible"
       :id="id"
       class="modal"
       style="display: block;"
@@ -37,23 +37,23 @@ import {defineProps,ref,onMounted,computed } from 'vue'
             type: String,
             required: true,
         },
-        // isModalVisible: {
-        //     type: String,
-        //     required: true,
-        // },
+        isModalVisible: {
+            type: Boolean,
+            required: true,
+        },
     })
 
     // Prevent modal close on backdrop click
-    const preventClose = (event) => {
-      event.stopPropagation(); // Stops the click from closing the modal
-    };
+    // const preventClose = (event) => {
+    //   event.stopPropagation(); // Stops the click from closing the modal
+    // };
 
     // Disable closing with "Esc" key when modal is open
-    const handleEscapeKey = (event) => {
-      if (event.key === 'Escape' && isModalVisible.value) {
-        event.preventDefault();
-      }
-    };
+    // const handleEscapeKey = (event) => {
+    //   if (event.key === 'Escape' && isModalVisible.value) {
+    //     event.preventDefault();
+    //   }
+    // };
 
     // // Add keydown listener for "Esc" key
     // onMounted(() => {

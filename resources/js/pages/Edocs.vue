@@ -130,7 +130,10 @@
         </template>
     </ModalComponent>
 
-    <LoadingComponent v-if="isModalVisible" loading-msg="Loading, please wait !" id="modalLoading">
+    <!--
+        Boolean required this example :isModalVisible
+     -->
+    <LoadingComponent :isModalVisible="isModalLoadingComponent" loadingMsg="Loading, please wait !" id="modalLoading">
     </LoadingComponent>
 </template>
 
@@ -152,8 +155,7 @@
         showBox,
         objModalOpenPdfImage,
         objModalSaveDocument,
-        objModalLoading,
-        isModalVisible,
+        isModalLoadingComponent,
         imageSrc,
         formSaveDocument,
         tblEdocs,
@@ -199,13 +201,15 @@
         //modalOpenPdfImage
         objModalSaveDocument.value = new Modal(document.querySelector("#modalCreateDocument"),{});
         objModalOpenPdfImage.value = new Modal(document.querySelector("#modalOpenPdfImage"),{});
-        // objModalLoading.value = new Modal(document.querySelector("#modalLoading"),{});
 
         $('#modalCreateDocument').on('hidden.bs.modal', function (e) {
             documentFile.value.value = "";
         });
         $('#modalOpenPdfImage').on('hidden.bs.modal', function (e) {
             formSaveDocument.value.selectPage = "N/A";
+            showBox.value = false;
+            boxX.value = "";
+            boxY.value = "";
         });
     })
 
