@@ -105,4 +105,18 @@ class EdocsController extends Controller
         }
     }
 
+    public function showPdf(Request $request){
+        /**
+         * TODO: get image employee number to DB
+         * TODO: get file path, ordinates and page DB
+         */
+        $imagePath = storage_path('app/public/images/R152.png');
+        // $filePath = storage_path('app/public/edocs/'.$documents[0]->id.'/'.$documents[0]->filtered_document_name);
+        // $pdfPath = storage_path('app/public/edocs/1'.'/'.'0_updated_crud_ypics_as_of_september_2024.pdf');
+        $pdfPath = storage_path('app/public/edocs/6'.'/'.'0_0_soa_2024_0001_pricon_january_2024.pdf');
+        // $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, $request->x, $request->y, 1);
+        // $insert_image_at_coordinates = $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.4472630173564753', '0.563177771783113', 1);
+        $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.6995994659546061', '0.6158306285039835', 1);
+    }
+
 }

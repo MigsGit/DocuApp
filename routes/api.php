@@ -24,4 +24,5 @@ Route::controller(EdocsController::class)->group(function () {
     Route::post('save_document', 'saveDocument')->name('save_document');
     Route::get('read_document_by_id', 'readDocumentById')->name('read_document_by_id');
     Route::get('convert_pdf_to_image_by_page_number', 'convertPdfToImageByPageNumber')->name('convert_pdf_to_image_by_page_number');
+    Route::get('/pdf/view', 'showPdf')->name('/pdf/view');
 });

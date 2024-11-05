@@ -6,8 +6,9 @@
             <div class="col-9">
                 <div class="card mt-3">
                     <div class="card-body overflow-auto">
-                        <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal"><i class="fas fa-plus"></i> Add</button>
-                        <!-- <button type="button" class="btn btn-primary" style="float: right !important;"  @click="showModal('modal1')"><i class="fas fa-plus"></i> Add Ticket</button> -->
+                        <!-- <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal"><i class="fas fa-plus"></i> Add</button> -->
+                        <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal" @click="show"><i class="fas fa-plus"></i> Add</button>
+                        <!-- <button type="button" class="btn btn-primary" style="float: right !important;"  @click="showModal('modal1') "><i class="fas fa-plus"></i> Add Ticket</button> -->
                         <br><br>
                         <DataTable
                             ref="tblEdocs"
@@ -213,6 +214,11 @@
         });
     })
 
+    const show = async () =>{
+        // alert('dsad')
+        // return
+        window.open('./pdf/view?x=100&y=150&page=2', '_blank');
+    }
     /*
         Function
     */

@@ -9,6 +9,8 @@ export default function edocs()
     const showBox = ref(false);
     const boxX = ref(0);
     const boxY = ref(0);
+    const height = ref(0);
+    const width = ref(0);
     const imageSrc = ref(null);
     const formSaveDocument = ref({
         documentId: null,
@@ -32,26 +34,27 @@ export default function edocs()
 
         boxX.value = event.clientX - rect.left;
         boxY.value = event.clientY - rect.top;
+        width.value = rect.width;
+        height.value = rect.height;
 
         showBox.value = true;
-        console.log('dsdad',showBox.value);
-        console.log('boxX',boxX.value);
-        console.log('boxY',boxY.value);
-        console.log('rect',rect);
+
+        // const pxCoordinate	= boxX.value / width.value;
+        // const pyCoordinate	= boxY.value / height.value;
+        const pxCoordinate	= boxX.value / width.value;
+        const pyCoordinate	= boxY.value / height.value;
         /*
-            $width 	= $_POST['width'];
-            $height = $_POST['height'];
-            $x 		= $_POST['x'];
-            $y 		= $_POST['y'];
-            $px		= $x / $width;
-            $py		= $y / $height;
             $return['px_py'] = $px."|".$py;
             echo json_encode($return);
-
         */
+            console.log('pxCoordinate',pxCoordinate);
+            console.log('pyCoordinate',pyCoordinate);
+            console.log('height',height.value);
+            console.log('width',width.value);
+            console.log('rect',rect);
       };
       const getCoordinatesCalculation = async ()  => {
-            
+
       }
       const selectedPage  = async ()  => {
         await axios.get('/api/convert_pdf_to_image_by_page_number',{
@@ -71,8 +74,9 @@ export default function edocs()
             objModalOpenPdfImage.value.show();
             // objModalLoading.value.hide();
             isModalLoadingComponent.value = false;
-
             imageSrc.value = data.image;
+            width.value = data.width;
+            height.value = data.height;
         }).catch((err) => {
             console.log(err);
         });
