@@ -1,5 +1,6 @@
 const mix = require('laravel-mix');
-// import mix from 'laravel-mix';
+//access .env - Activate this config if npm run watch 
+// require('dotenv').config();
 
 /*
  |--------------------------------------------------------------------------

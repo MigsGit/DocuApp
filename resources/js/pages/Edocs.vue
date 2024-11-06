@@ -215,9 +215,8 @@
     })
 
     const show = async () =>{
-        // alert('dsad')
-        // return
-        window.open('./pdf/view?x=100&y=150&page=2', '_blank');
+        // console.log(baseUrl);
+        window.open(baseUrl+'api/pdf/view?x=100&y=150&page=2', '_blank'); //boostrap.js
     }
     /*
         Function
