@@ -14,7 +14,7 @@
                             ref="tblEdocs"
                             class="table table-striped table-responsive mt-2"
                             :columns="columns"
-                            ajax="/docu-app/api/get_module"
+                            :ajax="tblEdocsBaseUrl"
                             :options="{
                                 serverSide: true, //Serverside true will load the network
                                 columnDefs:[
@@ -163,6 +163,7 @@
         documentFile,
     } = edocs()
 
+    const tblEdocsBaseUrl = ref(null);
     const columns =[
         {
             data: 'get_action',
@@ -178,14 +179,6 @@
                         objModalSaveDocument.value.show()
                     });
                 }
-                // if((btnViewTicket !== null)){
-                //     btnViewTicket.addEventListener('click', function(event){
-                //         event.preventDefault();
-                //         let ticketId = this.getAttribute('ticket-id')
-                //         let btnType = this.getAttribute('title')
-                //         editTicket(ticketId,btnType)
-                //     });
-                // }
             },
         },
         { data: 'status'},
@@ -197,6 +190,7 @@
 
 
     formSaveDocument.value.selectPage = "N/A";
+    tblEdocsBaseUrl.value = baseUrl+"api/get_module";
 
     onMounted( () => {
         //modalOpenPdfImage
@@ -212,10 +206,10 @@
             boxX.value = "";
             boxY.value = "";
         });
+
     })
 
     const show = async () =>{
-        // console.log(baseUrl);
         window.open(baseUrl+'api/pdf/view?x=100&y=150&page=2', '_blank'); //boostrap.js
     }
     /*

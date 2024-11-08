@@ -2,6 +2,7 @@ import IndexComponent from '../pages/Index.vue';
 import Dashboard from '../pages/Dashboard.vue';
 import Module from '../pages/Edocs.vue';
 import Login from '../pages/Login.vue'
+import ModalSample from '../components/ModalSample.vue'
 
 
 
@@ -11,6 +12,11 @@ export default [
         component: Login,
         name: 'login',
     },
+    // {
+    //     path: '/modal',
+    //     component: ModalSample,
+    //     name: 'modal',
+    // },
     {
         path: '/docu-app/main/',
         component: IndexComponent,
@@ -24,7 +30,12 @@ export default [
                 path: 'module',
                 name: 'module',
                 component: Module,
-            },
+            },{
+                path: 'modal',
+                component: ModalSample,
+                name: 'modal',
+            }
+
         ],
     }
 ];
