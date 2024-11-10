@@ -40,70 +40,108 @@
         </div>
     </div>
 
-    <ModalComponent icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument">
+    <!-- <ModalComponent modalDialog="modal-dialog modal-md modal-dialog-scrollable" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument"> -->
+    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument">
         <template #body>
             <div class="form-row align-items-center">
-                <div class="col-12">
-                    <label class="sr-only" for="inlineFormInputGroup">Document Id</label>
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                        <div class="input-group-text">Document Id</div>
+                    <!-- Row 1 -->
+                <div v-show="showFirstRow" class="row mb-2 animate__animated animate__slideInLeft">
+                    <div class="col-12">
+                        <label class="sr-only" for="inlineFormInputGroup">Document Id</label>
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                            <div class="input-group-text">Document Id</div>
+                            </div>
+                            <input v-model="formSaveDocument.documentId" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Document Id" >
                         </div>
-                        <input v-model="formSaveDocument.documentId" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Document Id" >
                     </div>
-                </div>
-                <div class="col-12">
-                    <label class="sr-only" for="inlineFormInputGroup">Document Name</label>
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                        <div class="input-group-text">Document Name</div>
+                    <div class="col-12">
+                        <label class="sr-only" for="inlineFormInputGroup">Document Name</label>
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                            <div class="input-group-text">Document Name</div>
+                            </div>
+                            <input v-model="formSaveDocument.documentName" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Document Name">
                         </div>
-                        <input v-model="formSaveDocument.documentName" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Document Name">
                     </div>
-                </div>
-                <div class="col-12">
-                    <label class="sr-only" for="inlineFormInputGroup">Document File</label>
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                        <div class="input-group-text">Document File</div>
+                    <div class="col-12">
+                        <label class="sr-only" for="inlineFormInputGroup">Document File</label>
+                        <div class="input-group mb-2">
+                            <div class="input-group-prepend">
+                            <div class="input-group-text">Document File</div>
+                            </div>
+                            <input
+                            accept=".pdf"
+                            id="fileThumbnail"
+                            class="form-control"
+                            ref="documentFile"
+                            type="file"
+                            multiple
+                            @change="uploadFile"
+                        >
                         </div>
-                        <input
-                        accept=".pdf"
-                        id="fileThumbnail"
-                        class="form-control"
-                        ref="documentFile"
-                        type="file"
-                        multiple
-                        @change="uploadFile"
-                    >
                     </div>
-                </div>
-                <div class="col-12">
-                    <label class="sr-only" for="selectPage">Select Page</label>
-                    <div class="input-group mb-2">
-                        <div class="input-group-prepend">
-                        <div class="input-group-text">Select Page</div>
-                        </div>
-                        <select v-model="formSaveDocument.selectPage" class="form-control" id="selectPage" @change="selectedPage">
-                            <option value="N/A" disabled>N/A</option>
-                            <option v-for="(optSelectPage,index) in formSaveDocument.optSelectPages" :key="optSelectPage" :value="optSelectPage">
-                                {{ optSelectPage }}
-                            </option>
-                        </select>
-                    </div>
-                </div>
 
+                </div>
+            <!-- Row 2 -->
+                <div v-show="showSecondRow" class="row animate__animated animate__slideInRight">
+                    <div class="col-12">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">Approver</th>
+                                <th scope="col">Page No</th>
+                                <th scope="col">Selected Page</th>
+                                <th scope="col">Ordinates</th>
+                                <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Count
+                                    </td>
+                                    <td>
+                                        <input v-model="formSaveDocument.approverName" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Approver Name">
+                                    </td>
+                                    <td>
+                                        <select v-model="formSaveDocument.selectPage" class="form-control" id="selectPage" @change="selectedPage">
+                                            <option value="N/A" disabled>N/A</option>
+                                            <option v-for="(optSelectPage,index) in formSaveDocument.optSelectPages" :key="optSelectPage" :value="optSelectPage">
+                                                {{ optSelectPage }}
+                                            </option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input v-model="formSaveDocument.selectedPage" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Selected Page">
+                                    </td>
+                                    <td>
+                                        <input v-model="formSaveDocument.ordinates" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Ordinates">
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-danger btn-sm" type="button" data-item-process="add" @click="fnRemoveRowResolution(index)">
+                                            <li class="fa fa-trash"></li>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </template>
         <template #footer>
-            <button type="button" id= "closeBtn" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
-            <button type="submit" class="btn btn-success btn-sm"><li class="fas fa-save"></li>
+            <!-- <button type="button" id= "closeBtn" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button> -->
+            <button type="button" class="btn btn-outline-secondary btn-sm" v-show="showBtnFirstRow" @click="toggleRow('first')">Back</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm" v-show="showBtnSecondRow" @click="toggleRow('second')">Next</button>
+            <button type="submit" class="btn btn-success btn-sm" v-show="showBtnSave"><li class="fas fa-save"></li>
                  Save
                  <!-- <span v-show="isLoading">Uploading... <i class="fa fa-spinner fa-pulse"></i></span> -->
             </button>
         </template>
     </ModalComponent> <!-- @add-event="" -->
-    <ModalComponent icon="fa-user" title="Resolution Procedure" id="modalOpenPdfImage">
+    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="Resolution Procedure" id="modalOpenPdfImage">
         <template #body>
             <div class="form-row align-items-center">
                 <div class="col-12">
@@ -130,7 +168,6 @@
             <button type="button" id= "closeBtn" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
         </template>
     </ModalComponent>
-
     <!--
         Boolean required this example :isModalVisible
      -->
@@ -146,6 +183,8 @@
     import ModalComponent from '../components/ModalComponent.vue'
     import LoadingComponent from '../components/LoadingComponent.vue'
     import edocs from "../composables/edocs";
+
+    const inputCount = reactive({key_num: [] })
     const {
         uploadFile,
         getCoordinates,
@@ -163,7 +202,14 @@
         documentFile,
     } = edocs()
 
+    //Ref State
     const tblEdocsBaseUrl = ref(null);
+    const showFirstRow = ref(true); // First row visibility
+    const showSecondRow = ref(false); // Second row visibility
+    const showBtnFirstRow = ref(false); // Second row visibility
+    const showBtnSecondRow = ref(true); // Second row visibility
+    const showBtnSave = ref(false); // Second row visibility
+
     const columns =[
         {
             data: 'get_action',
@@ -185,12 +231,12 @@
         { data: 'category_id'},
         { data: 'document_name'},
     ];
-    // const isLoading = ref(false);
-
 
 
     formSaveDocument.value.selectPage = "N/A";
     tblEdocsBaseUrl.value = baseUrl+"api/get_module";
+
+    
 
     onMounted( () => {
         //modalOpenPdfImage
@@ -208,6 +254,23 @@
         });
 
     })
+
+    const toggleRow = (row) => {
+      if (row === 'first') {
+        showFirstRow.value = true;
+        showSecondRow.value = false;
+        showBtnSecondRow.value = true;
+        showBtnFirstRow.value = false;
+        showBtnSave.value = false;
+
+      } else if (row === 'second') {
+        showSecondRow.value = true;
+        showFirstRow.value = false;
+        showBtnSecondRow.value = false;
+        showBtnFirstRow.value = true;
+        showBtnSave.value = true;
+      }
+    }
 
     const show = async () =>{
         window.open(baseUrl+'api/pdf/view?x=100&y=150&page=2', '_blank'); //boostrap.js

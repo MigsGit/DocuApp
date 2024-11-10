@@ -30,18 +30,18 @@
                     <!-- Row 1 -->
                     <transition name="fade" mode="out-in">
                         <div v-show="showFirstRow" class="row mb-2 animate__animated animate__slideInRight">
-                        <div class="col">
-                            <p>This is the first row of the modal.</p>
-                        </div>
+                            <div class="col">
+                                <p>This is the first row of the modal.</p>
+                            </div>
                         </div>
                     </transition>
 
                     <!-- Row 2 -->
                     <transition name="fade" mode="out-in">
                         <div v-show="showSecondRow" class="row animate__animated animate__slideInRight">
-                        <div class="col">
-                            <p>This is the second row of the modal.</p>
-                        </div>
+                            <div class="col">
+                                <p>This is the second row of the modal.</p>
+                            </div>
                         </div>
                     </transition>
                 <!-- </div> -->
