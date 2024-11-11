@@ -22,6 +22,10 @@ export default function edocs()
     const tblEdocs = ref(null);
     const documentFile = ref([]);
 
+    const rowSaveDocuments = ref([
+        { selectPage: 'N/A', approverName: '', ordinates: '' },
+    ]);
+
 
     const uploadFile = async (event)  => {
         formSaveDocument.value.documentFile =  Array.from(event.target.files);
@@ -56,10 +60,18 @@ export default function edocs()
       const getCoordinatesCalculation = async ()  => {
 
       }
-      const selectedPage  = async ()  => {
+      /**
+      * Getting of current value of select option inside the v-for
+      * You need to passed param, row and new row
+      * Update the row value to a new row
+      * @param rowSaveDocument
+      * @param newRowSaveDocument
+      */
+      const selectedPage  = async (rowSaveDocument,newRowSaveDocument)  => {
+        rowSaveDocument.selectPage = newRowSaveDocument; // Update the selectPage
         await axios.get('/api/convert_pdf_to_image_by_page_number',{
             params:{
-                select_page: formSaveDocument.value.selectPage,
+                select_page: rowSaveDocument.selectPage,
                 document_id: formSaveDocument.value.documentId
             },
             transformRequest: [(data, headers) => {
@@ -123,6 +135,7 @@ export default function edocs()
         showBox,
         imageSrc,
         formSaveDocument,
+        rowSaveDocuments,
         tblEdocs,
         documentFile,
     }

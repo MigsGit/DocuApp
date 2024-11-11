@@ -8,7 +8,6 @@
                     <div class="card-body overflow-auto">
                         <!-- <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal"><i class="fas fa-plus"></i> Add</button> -->
                         <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal" @click="show"><i class="fas fa-plus"></i> Add</button>
-                        <!-- <button type="button" class="btn btn-primary" style="float: right !important;"  @click="showModal('modal1') "><i class="fas fa-plus"></i> Add Ticket</button> -->
                         <br><br>
                         <DataTable
                             ref="tblEdocs"
@@ -43,7 +42,7 @@
     <!-- <ModalComponent modalDialog="modal-dialog modal-md modal-dialog-scrollable" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument"> -->
     <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument">
         <template #body>
-            <div class="form-row align-items-center">
+            <div class="align-items-center">
                     <!-- Row 1 -->
                 <div v-show="showFirstRow" class="row mb-2 animate__animated animate__slideInLeft">
                     <div class="col-12">
@@ -86,27 +85,37 @@
             <!-- Row 2 -->
                 <div v-show="showSecondRow" class="row animate__animated animate__slideInRight">
                     <div class="col-12">
+                        <button @click="addRowSaveDocuments"type="button" class="btn btn-primary" style="float: right !important;"><i class="fas fa-plus"></i> Add</button>
+                        <br><br>
+                    </div>
+                    <div class="col-12">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Approver</th>
-                                <th scope="col">Page No</th>
+                                <th scope="col" style="width: 15%;">Page No</th>
                                 <th scope="col">Selected Page</th>
                                 <th scope="col">Ordinates</th>
                                 <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <!--
+                                    import { v4 as uuidv4 } from 'uuid';
+                                    const rows = ref([
+                                        { id: uuidv4(), firstName: '', lastName: '', email: '' },
+                                    ]);
+                                -->
+                                <tr v-for="(rowSaveDocument, index) in rowSaveDocuments" :key="rowSaveDocument.index">
                                     <td>
-                                        Count
+                                        {{ rowSaveDocument.index }}
                                     </td>
                                     <td>
-                                        <input v-model="formSaveDocument.approverName" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Approver Name">
+                                        <input v-model="rowSaveDocument.approverName" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Approver Name">
                                     </td>
                                     <td>
-                                        <select v-model="formSaveDocument.selectPage" class="form-control" id="selectPage" @change="selectedPage">
+                                        <select v-model="rowSaveDocument.selectPage" class="form-control" id="selectPage" @change="selectedPage(rowSaveDocument, $event.target.value)">
                                             <option value="N/A" disabled>N/A</option>
                                             <option v-for="(optSelectPage,index) in formSaveDocument.optSelectPages" :key="optSelectPage" :value="optSelectPage">
                                                 {{ optSelectPage }}
@@ -114,13 +123,13 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input v-model="formSaveDocument.selectedPage" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Selected Page">
+                                        <input v-model="rowSaveDocument.selectedPage" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Selected Page">
                                     </td>
                                     <td>
-                                        <input v-model="formSaveDocument.ordinates" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Ordinates">
+                                        <input v-model="rowSaveDocument.ordinates" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Ordinates">
                                     </td>
                                     <td>
-                                        <button class="btn btn-danger btn-sm" type="button" data-item-process="add" @click="fnRemoveRowResolution(index)">
+                                        <button class="btn btn-danger btn-sm" type="button" data-item-process="add" @click="deleteRowSaveDocuments(index)">
                                             <li class="fa fa-trash"></li>
                                         </button>
                                     </td>
@@ -183,7 +192,6 @@
     import ModalComponent from '../components/ModalComponent.vue'
     import LoadingComponent from '../components/LoadingComponent.vue'
     import edocs from "../composables/edocs";
-
     const inputCount = reactive({key_num: [] })
     const {
         uploadFile,
@@ -198,17 +206,21 @@
         isModalLoadingComponent,
         imageSrc,
         formSaveDocument,
+        rowSaveDocuments,
         tblEdocs,
         documentFile,
     } = edocs()
 
+
     //Ref State
     const tblEdocsBaseUrl = ref(null);
-    const showFirstRow = ref(true); // First row visibility
-    const showSecondRow = ref(false); // Second row visibility
-    const showBtnFirstRow = ref(false); // Second row visibility
-    const showBtnSecondRow = ref(true); // Second row visibility
-    const showBtnSave = ref(false); // Second row visibility
+    const showFirstRow = ref(true);
+    const showSecondRow = ref(false);
+    const showBtnFirstRow = ref(false);
+    const showBtnSecondRow = ref(true);
+    const showBtnSave = ref(false);
+
+
 
     const columns =[
         {
@@ -232,11 +244,7 @@
         { data: 'document_name'},
     ];
 
-
-    formSaveDocument.value.selectPage = "N/A";
     tblEdocsBaseUrl.value = baseUrl+"api/get_module";
-
-    
 
     onMounted( () => {
         //modalOpenPdfImage
@@ -272,9 +280,22 @@
       }
     }
 
+
     const show = async () =>{
         window.open(baseUrl+'api/pdf/view?x=100&y=150&page=2', '_blank'); //boostrap.js
     }
+    const addRowSaveDocuments = async () =>{
+        rowSaveDocuments.value.push({ selectPage: '', approverName: '', ordinates: '' })
+        console.log(rowSaveDocuments.value);
+    }
+    const deleteRowSaveDocuments = async (index) =>{
+        rowSaveDocuments.value.splice(index,1);
+        console.log(rowSaveDocuments);
+    }
+
+    // rowSaveDocuments = ref([
+    // { selectPage: '', approverName: '', ordinates: '' },
+    // ]);
     /*
         Function
     */
