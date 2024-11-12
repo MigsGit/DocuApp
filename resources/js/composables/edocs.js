@@ -132,8 +132,13 @@ export default function edocs()
         }).then((response) => {
             let data = response.data
             let readApproverById = data.read_approver_by_id
-            console.log(readApproverById);
-            
+            formSaveDocument.value.optApproverName = readApproverById.map((value) => {
+                return {
+                    value: value.id,
+                    label: value.name
+                }
+            });
+
         }).catch((err) => {
             console.log(err);
         });

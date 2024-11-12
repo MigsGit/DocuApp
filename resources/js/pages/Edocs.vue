@@ -107,16 +107,22 @@
                                         {{ index+1 }}
                                     </td>
                                     <td>
-                                        <input v-model="rowSaveDocument.uuid" :value="rowSaveDocument.uuid" type="text" class="form-control" id="inlineFormInputGroup" placeholder="UUID">
+                                        test
+                                        <!-- <input v-model="rowSaveDocument.uuid" :value="rowSaveDocument.uuid" type="text" class="form-control" id="inlineFormInputGroup" placeholder="UUID"> -->
                                     </td>
                                     <td>
-                                        <!-- <input v-model="rowSaveDocument.approverName" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Approver Name"> -->
-                                        <select v-model="rowSaveDocument.approverName" class="form-control" id="approverName" @change="selectedApproverName(rowSaveDocument, $event.target.value)">
+                                        <MultiselectElement
+                                            v-model="rowSaveDocument.approverName"
+                                            :close-on-select="true"
+                                            :searchable="true"
+                                            :options="formSaveDocument.optApproverName"
+                                        />
+                                        <!-- <select v-model="rowSaveDocument.approverName" class="form-control" id="approverName" @change="selectedApproverName(rowSaveDocument, $event.target.value)">
                                             <option value="N/A" disabled>N/A</option>
                                             <option v-for="(optSelectApproverName,index) in formSaveDocument.optApproverName" :key="optSelectApproverName" :value="optSelectApproverName">
                                                 {{ optSelectApproverName }}
                                             </option>
-                                        </select>
+                                        </select> -->
                                     </td>
                                     <td>
                                         <select v-model="rowSaveDocument.selectPage" class="form-control" id="selectPage" @change="selectedPage(rowSaveDocument, $event.target.value)">
