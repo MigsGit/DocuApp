@@ -93,26 +93,29 @@
                             <thead>
                                 <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">Approver</th>
-                                <th scope="col" style="width: 15%;">Page No</th>
+                                <th scope="col">UUID</th>
+                                <th scope="col"  style="width: 30%;">Approver</th>
+                                <th scope="col">Page No</th>
                                 <th scope="col">Selected Page</th>
                                 <th scope="col">Ordinates</th>
                                 <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <!--
-                                    import { v4 as uuidv4 } from 'uuid';
-                                    const rows = ref([
-                                        { id: uuidv4(), firstName: '', lastName: '', email: '' },
-                                    ]);
-                                -->
                                 <tr v-for="(rowSaveDocument, index) in rowSaveDocuments" :key="rowSaveDocument.index">
                                     <td>
-                                        {{ rowSaveDocument.index }}
+                                        {{index+1}}
                                     </td>
                                     <td>
-                                        <input v-model="rowSaveDocument.approverName" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Approver Name">
+                                        <input v-model="rowSaveDocument.uuid" :value="rowSaveDocument.uuid" type="text" class="form-control" id="inlineFormInputGroup" placeholder="UUID">
+                                    </td>
+                                    <td>
+                                        <MultiselectElement
+                                            v-model="rowSaveDocument.approverName"
+                                            :close-on-select="true"
+                                            :searchable="true"
+                                            :options="formSaveDocument.optApproverName"
+                                        />
                                     </td>
                                     <td>
                                         <select v-model="rowSaveDocument.selectPage" class="form-control" id="selectPage" @change="selectedPage(rowSaveDocument, $event.target.value)">
@@ -123,7 +126,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input v-model="rowSaveDocument.selectedPage" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Selected Page">
+                                        <input v-model="rowSaveDocument.selectedPage" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Ordinates">
                                     </td>
                                     <td>
                                         <input v-model="rowSaveDocument.ordinates" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Ordinates">
@@ -150,7 +153,7 @@
             </button>
         </template>
     </ModalComponent> <!-- @add-event="" -->
-    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="Resolution Procedure" id="modalOpenPdfImage">
+    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="PDF Document" id="modalOpenPdfImage">
         <template #body>
             <div class="form-row align-items-center">
                 <div class="col-12">
@@ -174,6 +177,7 @@
             </div>
         </template>
         <template #footer>
+            <button type="button" class="btn btn-outline-success btn-sm"  @click="saveCoordinates"><li class="fas fa-save"></li></button>
             <button type="button" id= "closeBtn" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
         </template>
     </ModalComponent>
@@ -192,12 +196,14 @@
     import ModalComponent from '../components/ModalComponent.vue'
     import LoadingComponent from '../components/LoadingComponent.vue'
     import edocs from "../composables/edocs";
-    const inputCount = reactive({key_num: [] })
+    import {v4 as uuid4} from 'uuid';
+
     const {
         uploadFile,
         getCoordinates,
         selectedPage,
         readDocumentById,
+        readApproverNameById,
         boxX,
         boxY,
         showBox,
@@ -211,16 +217,13 @@
         documentFile,
     } = edocs()
 
-
     //Ref State
     const tblEdocsBaseUrl = ref(null);
     const showFirstRow = ref(true);
     const showSecondRow = ref(false);
     const showBtnFirstRow = ref(false);
     const showBtnSecondRow = ref(true);
-    const showBtnSave = ref(false);
-
-
+    const showBtnSave = ref(false)
 
     const columns =[
         {
@@ -234,6 +237,7 @@
                         let documentId = this.getAttribute('data-id')
                         formSaveDocument.value.documentId = documentId;
                         readDocumentById(documentId);
+                        readApproverNameById(1);
                         objModalSaveDocument.value.show()
                     });
                 }
@@ -263,6 +267,10 @@
 
     })
 
+    const saveCoordinates = () =>{
+        
+    }
+
     const toggleRow = (row) => {
       if (row === 'first') {
         showFirstRow.value = true;
@@ -280,14 +288,15 @@
       }
     }
 
-
     const show = async () =>{
         window.open(baseUrl+'api/pdf/view?x=100&y=150&page=2', '_blank'); //boostrap.js
     }
+
     const addRowSaveDocuments = async () =>{
-        rowSaveDocuments.value.push({ selectPage: '', approverName: '', ordinates: '' })
+        rowSaveDocuments.value.push({uuid: uuid4(), selectPage: 'N/A', approverName: '', ordinates: '' })
         console.log(rowSaveDocuments.value);
     }
+
     const deleteRowSaveDocuments = async (index) =>{
         rowSaveDocuments.value.splice(index,1);
         console.log(rowSaveDocuments);
@@ -323,6 +332,8 @@
 
 
 </script>
+<style  src="@vueform/multiselect/themes/default.css">
+</style>
 <style>
     .pdf-image-container {
         position: relative;
@@ -330,7 +341,7 @@
     .click-box {
         height:4%;
         border: solid 1px;
-        position:absolute;
+        position: absolute;
         color:black
     }
 </style>

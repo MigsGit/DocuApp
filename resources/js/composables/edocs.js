@@ -1,4 +1,5 @@
 import { ref, inject,reactive } from 'vue'
+import {v4 as uuid4} from 'uuid';
 export default function edocs()
 {
     const objModalSaveDocument = ref(null);
@@ -18,12 +19,19 @@ export default function edocs()
         documentFile:[],
         selectPage: "",
         optSelectPages: [],
+        uuid: null,
     });
     const tblEdocs = ref(null);
     const documentFile = ref([]);
 
     const rowSaveDocuments = ref([
-        { selectPage: 'N/A', approverName: '', ordinates: '' },
+        {
+            uuid: uuid4(),
+            approverName: '',
+            selectPage: 'N/A',
+            selectedPage:'',
+            ordinates: '',
+        },
     ]);
 
 
@@ -120,12 +128,35 @@ export default function edocs()
         });
     }
 
+    const readApproverNameById  = async (approverId)  => {
+        formSaveDocument.value.optApproverName = [];
+        await axios.get('/api/read_approver_name_by_id',{
+            params:{
+                approver_id: approverId
+            }
+        }).then((response) => {
+            let data = response.data
+            let readApproverById = data.read_approver_by_id
+            console.log(readApproverById);
+            formSaveDocument.value.optApproverName = readApproverById.map((value) => {
+                return {
+                    value: value.id,
+                    label: value.name
+                }
+            });
+
+        }).catch((err) => {
+            console.log(err);
+        });
+    }
+
 
     return {
         uploadFile,
         getCoordinates,
         selectedPage,
         readDocumentById,
+        readApproverNameById,
         objModalOpenPdfImage,
         objModalSaveDocument,
         objModalLoading,
