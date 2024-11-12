@@ -93,36 +93,26 @@
                             <thead>
                                 <tr>
                                 <th scope="col">#</th>
-                                <th scope="col">UUID</th>
-                                <th scope="col" style="width: 30%;">Approver</th>
-                                <th scope="col" style="width: 13%;">Page No</th>
+                                <th scope="col">Approver</th>
+                                <th scope="col" style="width: 15%;">Page No</th>
                                 <th scope="col">Selected Page</th>
                                 <th scope="col">Ordinates</th>
                                 <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(rowSaveDocument, index) in rowSaveDocuments" :key="index">
+                                <!--
+                                    import { v4 as uuidv4 } from 'uuid';
+                                    const rows = ref([
+                                        { id: uuidv4(), firstName: '', lastName: '', email: '' },
+                                    ]);
+                                -->
+                                <tr v-for="(rowSaveDocument, index) in rowSaveDocuments" :key="rowSaveDocument.index">
                                     <td>
-                                        {{ index+1 }}
+                                        {{ rowSaveDocument.index }}
                                     </td>
                                     <td>
-                                        test
-                                        <!-- <input v-model="rowSaveDocument.uuid" :value="rowSaveDocument.uuid" type="text" class="form-control" id="inlineFormInputGroup" placeholder="UUID"> -->
-                                    </td>
-                                    <td>
-                                        <MultiselectElement
-                                            v-model="rowSaveDocument.approverName"
-                                            :close-on-select="true"
-                                            :searchable="true"
-                                            :options="formSaveDocument.optApproverName"
-                                        />
-                                        <!-- <select v-model="rowSaveDocument.approverName" class="form-control" id="approverName" @change="selectedApproverName(rowSaveDocument, $event.target.value)">
-                                            <option value="N/A" disabled>N/A</option>
-                                            <option v-for="(optSelectApproverName,index) in formSaveDocument.optApproverName" :key="optSelectApproverName" :value="optSelectApproverName">
-                                                {{ optSelectApproverName }}
-                                            </option>
-                                        </select> -->
+                                        <input v-model="rowSaveDocument.approverName" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Approver Name">
                                     </td>
                                     <td>
                                         <select v-model="rowSaveDocument.selectPage" class="form-control" id="selectPage" @change="selectedPage(rowSaveDocument, $event.target.value)">
@@ -202,14 +192,12 @@
     import ModalComponent from '../components/ModalComponent.vue'
     import LoadingComponent from '../components/LoadingComponent.vue'
     import edocs from "../composables/edocs";
-    import { v4 as uuidv4 } from 'uuid';
-
+    const inputCount = reactive({key_num: [] })
     const {
         uploadFile,
         getCoordinates,
         selectedPage,
         readDocumentById,
-        readApproverNameById,
         boxX,
         boxY,
         showBox,
@@ -223,6 +211,7 @@
         documentFile,
     } = edocs()
 
+
     //Ref State
     const tblEdocsBaseUrl = ref(null);
     const showFirstRow = ref(true);
@@ -230,6 +219,8 @@
     const showBtnFirstRow = ref(false);
     const showBtnSecondRow = ref(true);
     const showBtnSave = ref(false);
+
+
 
     const columns =[
         {
@@ -243,7 +234,6 @@
                         let documentId = this.getAttribute('data-id')
                         formSaveDocument.value.documentId = documentId;
                         readDocumentById(documentId);
-                        readApproverNameById(1)
                         objModalSaveDocument.value.show()
                     });
                 }
@@ -295,7 +285,7 @@
         window.open(baseUrl+'api/pdf/view?x=100&y=150&page=2', '_blank'); //boostrap.js
     }
     const addRowSaveDocuments = async () =>{
-        rowSaveDocuments.value.push({ uuid: uuidv4(),selectPage: 'N/A', approverName: '', ordinates: '' })
+        rowSaveDocuments.value.push({ selectPage: '', approverName: '', ordinates: '' })
         console.log(rowSaveDocuments.value);
     }
     const deleteRowSaveDocuments = async (index) =>{

@@ -45,7 +45,8 @@ class ResourceJob implements ResourceInterface
 
     public function readByID($model,$id){
         try {
-            return $model::where('id',$id)->whereNull('deleted_at')->get();
+            return $data = $model::where('id',$id)->whereNull('deleted_at')->get();
+            // return response()->json(['is_success' => 'true','data'=> $data]);
         } catch (Exception $e) {
             return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
         }

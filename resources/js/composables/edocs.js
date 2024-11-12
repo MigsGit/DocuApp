@@ -1,6 +1,4 @@
-import { ref, inject,reactive } from 'vue';
-import { v4 as uuidv4 } from 'uuid';
-
+import { ref, inject,reactive } from 'vue'
 export default function edocs()
 {
     const objModalSaveDocument = ref(null);
@@ -20,15 +18,14 @@ export default function edocs()
         documentFile:[],
         selectPage: "",
         optSelectPages: [],
-        optApproverName: [],
     });
     const tblEdocs = ref(null);
     const documentFile = ref([]);
 
     const rowSaveDocuments = ref([
-        { uuid:uuidv4(),selectPage: 'N/A', approverName: '', ordinates: '' },
+        { selectPage: 'N/A', approverName: '', ordinates: '' },
     ]);
-    console.log(rowSaveDocuments.value);
+
 
     const uploadFile = async (event)  => {
         formSaveDocument.value.documentFile =  Array.from(event.target.files);
@@ -111,34 +108,13 @@ export default function edocs()
         .then((response) => {
             // objModalLoading.value.hide();
             isModalLoadingComponent.value = false;
-            let documentDetails = response.data;
-            formSaveDocument.value.documentName = documentDetails.read_document_by_id[0].document_name;
+            let document_details = response.data;
+            formSaveDocument.value.documentName = document_details.read_document_by_id[0].document_name;
 
             //get the page thru array push
-            for (let index = 0; index < documentDetails.page_count; index++) {
+            for (let index = 0; index < document_details.page_count; index++) {
                 formSaveDocument.value.optSelectPages.push(index+1)
             }
-        }).catch((err) => {
-            console.log(err);
-        });
-    }
-
-    const readApproverNameById  = async (approverId)  => {
-        formSaveDocument.value.optApproverName = [];
-        await axios.get('/api/read_approver_name_by_id',{
-            params:{
-                approver_id: approverId
-            }
-        }).then((response) => {
-            let data = response.data
-            let readApproverById = data.read_approver_by_id
-            formSaveDocument.value.optApproverName = readApproverById.map((value) => {
-                return {
-                    value: value.id,
-                    label: value.name
-                }
-            });
-
         }).catch((err) => {
             console.log(err);
         });
@@ -150,7 +126,6 @@ export default function edocs()
         getCoordinates,
         selectedPage,
         readDocumentById,
-        readApproverNameById,
         objModalOpenPdfImage,
         objModalSaveDocument,
         objModalLoading,

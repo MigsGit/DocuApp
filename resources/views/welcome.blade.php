@@ -16,6 +16,6 @@
         {{-- <route-view></route-view> --}}
         {{-- <index-component></index-component> --}}
     </div>
-    <script src="{{ asset(' ') }}"></script>
+    <script src="{{ asset('/public/js/app.js') }}"></script>
     <!-- Core plugin JavaScript-->
 </body>
