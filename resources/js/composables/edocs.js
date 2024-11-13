@@ -13,11 +13,17 @@ export default function edocs()
     const height = ref(0);
     const width = ref(0);
     const imageSrc = ref(null);
+
+    const edocsVar = reactive({
+        pxCoordinate: '',
+        pyCoordinate: '',
+        rowSaveDocumentId: '',
+        selectedPage: '',
+    });
     const formSaveDocument = ref({
         documentId: null,
         documentName: null,
         documentFile:[],
-        selectPage: "",
         optSelectPages: [],
         uuid: null,
     });
@@ -28,8 +34,7 @@ export default function edocs()
         {
             uuid: uuid4(),
             approverName: '',
-            selectPage: 'N/A',
-            selectedPage:'',
+            selectPage: "N/A",
             ordinates: '',
         },
     ]);
@@ -53,14 +58,13 @@ export default function edocs()
 
         // const pxCoordinate	= boxX.value / width.value;
         // const pyCoordinate	= boxY.value / height.value;
-        const pxCoordinate	= boxX.value / width.value;
-        const pyCoordinate	= boxY.value / height.value;
+        edocsVar.pxCoordinate	= boxX.value / width.value;
+        edocsVar.pyCoordinate	= boxY.value / height.value;
         /*
             $return['px_py'] = $px."|".$py;
             echo json_encode($return);
         */
-            console.log('pxCoordinate',pxCoordinate);
-            console.log('pyCoordinate',pyCoordinate);
+
             console.log('height',height.value);
             console.log('width',width.value);
             console.log('rect',rect);
@@ -75,8 +79,10 @@ export default function edocs()
       * @param rowSaveDocument
       * @param newRowSaveDocument
       */
-      const selectedPage  = async (rowSaveDocument,newRowSaveDocument)  => {
+      const selectedPage  = async (rowSaveDocument,newRowSaveDocument,rowIndex=null)  => {
         rowSaveDocument.selectPage = newRowSaveDocument; // Update the selectPage
+        edocsVar.rowSaveDocumentId = rowIndex;
+        edocsVar.selectedPage = newRowSaveDocument;
         await axios.get('/api/convert_pdf_to_image_by_page_number',{
             params:{
                 select_page: rowSaveDocument.selectPage,
@@ -130,14 +136,15 @@ export default function edocs()
 
     const readApproverNameById  = async (approverId)  => {
         formSaveDocument.value.optApproverName = [];
-        await axios.get('/api/read_approver_name_by_id',{
-            params:{
-                approver_id: approverId
-            }
+        await axios.get('/api/read_approver_name',{
+            // params:{
+            //     approver_id: approverId
+            // }
         }).then((response) => {
             let data = response.data
             let readApproverById = data.read_approver_by_id
-            console.log(readApproverById);
+            // formSaveDocument.value.selectPage = approverId;
+            // formSaveDocument.value.selectAp
             formSaveDocument.value.optApproverName = readApproverById.map((value) => {
                 return {
                     value: value.id,
@@ -157,6 +164,7 @@ export default function edocs()
         selectedPage,
         readDocumentById,
         readApproverNameById,
+        edocsVar,
         objModalOpenPdfImage,
         objModalSaveDocument,
         objModalLoading,

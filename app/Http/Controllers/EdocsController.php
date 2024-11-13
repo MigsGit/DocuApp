@@ -97,6 +97,14 @@ class EdocsController extends Controller
             //throw $th;
         }
     }
+    public function readApproverName(Request $request){
+        try {
+            $read_approver_by_id = $this->resource_interface->read(User::class);
+            return response()->json(['is_success' => 'true','read_approver_by_id' => $read_approver_by_id]);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
 
 
      /**

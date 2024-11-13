@@ -94,8 +94,8 @@
                                 <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">UUID</th>
-                                <th scope="col"  style="width: 30%;">Approver</th>
-                                <th scope="col">Page No</th>
+                                <th scope="col" style="width: 30%;">Approver</th>
+                                <th scope="col" style="width: 15%;">Page No</th>
                                 <th scope="col">Selected Page</th>
                                 <th scope="col">Ordinates</th>
                                 <th scope="col">Action</th>
@@ -118,7 +118,7 @@
                                         />
                                     </td>
                                     <td>
-                                        <select v-model="rowSaveDocument.selectPage" class="form-control" id="selectPage" @change="selectedPage(rowSaveDocument, $event.target.value)">
+                                        <select v-model="rowSaveDocument.selectPage" class="form-control" id="selectPage" @change="selectedPage(rowSaveDocument, $event.target.value,index)">
                                             <option value="N/A" disabled>N/A</option>
                                             <option v-for="(optSelectPage,index) in formSaveDocument.optSelectPages" :key="optSelectPage" :value="optSelectPage">
                                                 {{ optSelectPage }}
@@ -126,7 +126,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <input v-model="rowSaveDocument.selectedPage" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Ordinates">
+                                        <input v-model="rowSaveDocument.selectedPage" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Selected Page">
                                     </td>
                                     <td>
                                         <input v-model="rowSaveDocument.ordinates" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Ordinates">
@@ -153,7 +153,7 @@
             </button>
         </template>
     </ModalComponent> <!-- @add-event="" -->
-    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="PDF Document" id="modalOpenPdfImage">
+    <ModalComponent modalDialog="modal-dialog modal-xl" icon="fa-user" title="PDF Document" id="modalOpenPdfImage">
         <template #body>
             <div class="form-row align-items-center">
                 <div class="col-12">
@@ -204,6 +204,7 @@
         selectedPage,
         readDocumentById,
         readApproverNameById,
+        edocsVar,
         boxX,
         boxY,
         showBox,
@@ -259,7 +260,9 @@
             documentFile.value.value = "";
         });
         $('#modalOpenPdfImage').on('hidden.bs.modal', function (e) {
-            formSaveDocument.value.selectPage = "N/A";
+            rowSaveDocuments.value.forEach(rowSaveDocuments => {
+                rowSaveDocuments.selectPage = "N/A"
+            });
             showBox.value = false;
             boxX.value = "";
             boxY.value = "";
@@ -268,7 +271,8 @@
     })
 
     const saveCoordinates = () =>{
-        
+        rowSaveDocuments.value[edocsVar.rowSaveDocumentId].ordinates = `${edocsVar.pxCoordinate} | ${edocsVar.pyCoordinate}`;
+        rowSaveDocuments.value[edocsVar.rowSaveDocumentId].selectedPage = edocsVar.selectedPage;
     }
 
     const toggleRow = (row) => {
@@ -293,18 +297,13 @@
     }
 
     const addRowSaveDocuments = async () =>{
-        rowSaveDocuments.value.push({uuid: uuid4(), selectPage: 'N/A', approverName: '', ordinates: '' })
-        console.log(rowSaveDocuments.value);
+        rowSaveDocuments.value.push({   uuid: uuid4(), selectPage: 'N/A' ,approverName: '', ordinates: '' })
     }
 
     const deleteRowSaveDocuments = async (index) =>{
         rowSaveDocuments.value.splice(index,1);
-        console.log(rowSaveDocuments);
     }
 
-    // rowSaveDocuments = ref([
-    // { selectPage: '', approverName: '', ordinates: '' },
-    // ]);
     /*
         Function
     */
@@ -312,7 +311,7 @@
         let formData = new FormData();
         formData.append("document_id", formSaveDocument.value.documentId);
         formData.append("document_name", formSaveDocument.value.documentName);
-        console.log('saveDocument',formSaveDocument.value.documentFile);
+        // console.log('saveDocument',formSaveDocument.value.documentFile);
 
         formSaveDocument.value.documentFile.forEach((file, index) => {
             formData.append(`document_file[${index}]`, file);  // Ensures that each file gets a unique key

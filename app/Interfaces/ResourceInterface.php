@@ -11,7 +11,7 @@ interface ResourceInterface
      */
     public function create($model,array $data);
     public function createOrUpdate( $model,$data_id,array $data);
-    // public function read();
+    public function read($model);
     public function update($model,$id,array $data);
     // public function delete($id);
     public function readByID($model,$id);

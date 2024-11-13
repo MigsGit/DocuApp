@@ -52,14 +52,13 @@ class ResourceJob implements ResourceInterface
         }
     }
 
-    // public function read(Request $request){
-    //     return 'true' ;
-    //     try {
-    //         return response()->json(['is_success' => 'true']);
-    //     } catch (Exception $e) {
-    //         return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
-    //     }
-    // }
+    public function read($model){
+        try {
+            return $data = $model::whereNull('deleted_at')->get();
+        } catch (Exception $e) {
+            return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
+        }
+    }
 
     public function update($model,$data_id,array $data){
         date_default_timezone_set('Asia/Manila');
