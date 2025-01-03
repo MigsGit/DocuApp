@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 
+use App\Models\ApproverOrdinates;
 use App\Models\User;
 use App\Models\Document;
 
@@ -39,18 +40,25 @@ class EdocsController extends Controller
      * @param $edocs_request
      */
     public function saveDocument(EdocsRequest $edocs_request){
-        // return $save_document = $this->resource_interface->createOrUpdate( Document::class,$edocs_request->validated(),$edocs_request->document_id);
-        // $edocs_request->validate([
-        //     'document_file' => 'required|mimes:pdf|max:2048', // Example: only allow PDFs with max 2MB size
-        // ]);
+
+        // return $edocs_request->all();
         $document_id = $edocs_request->document_id;
         if( isset( $document_id ) ){
-            $this->resource_interface->update( Document::class,$document_id,$edocs_request->validated());
+            $fk_document = $this->resource_interface->update( Document::class,$document_id,$edocs_request->validated());
         }else{
             $save_document = $this->resource_interface->create( Document::class,$edocs_request->validated());
             $document_id = $save_document->data_id;
         }
-
+        foreach ($edocs_request->uuid as $key => $value) {
+            $request_validated = [
+                'fk_document'  => $document_id,
+                'uuid'  => $edocs_request->uuid[$key],
+                'approver_id' => $edocs_request->approver_name[$key],
+                'page_no' => $edocs_request->selected_page[$key],
+                'ordinates' => $edocs_request->ordinates[$key],
+            ];
+            $this->resource_interface->create( ApproverOrdinates::class,$request_validated);
+        }
         if($edocs_request->hasfile('document_file') ){
             $arr_upload_file = $this->edocs_interface->uploadFile($edocs_request->document_file,$document_id);
             $this->resource_interface->update( Document::class,$document_id,$arr_upload_file);
@@ -80,11 +88,12 @@ class EdocsController extends Controller
         // return $request->all();
         try {
             $read_document_by_id = $this->resource_interface->readById(Document::class,$request->document_id);
+            // return 'app/' . 'public/edocs/'. $read_document_by_id[0]->id .'/'. $read_document_by_id[0]->filtered_document_name;
             $page_count = $this->pdf_service->getPageCount(storage_path('app/' . 'public/edocs/'. $read_document_by_id[0]->id .'/'. $read_document_by_id[0]->filtered_document_name));
-
+            // $page_count =  Storage::response( 'public/edocs/'. $read_document_by_id[0]->id .'/'. $read_document_by_id[0]->filtered_document_name);
             return response()->json(['is_success' => 'true', 'read_document_by_id' => $read_document_by_id , 'page_count' => $page_count]);
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
         }
     }
 
@@ -94,7 +103,7 @@ class EdocsController extends Controller
             $read_approver_by_id = $this->resource_interface->readById(User::class,$request->approver_id);
             return response()->json(['is_success' => 'true','read_approver_by_id' => $read_approver_by_id]);
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
         }
     }
     public function readApproverName(Request $request){
@@ -102,7 +111,7 @@ class EdocsController extends Controller
             $read_approver_by_id = $this->resource_interface->read(User::class);
             return response()->json(['is_success' => 'true','read_approver_by_id' => $read_approver_by_id]);
         } catch (\Throwable $th) {
-            //throw $th;
+            throw $th;
         }
     }
 
@@ -141,7 +150,7 @@ class EdocsController extends Controller
         $pdfPath = storage_path('app/public/edocs/6'.'/'.'0_0_soa_2024_0001_pricon_january_2024.pdf');
         // $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, $request->x, $request->y, 1);
         // $insert_image_at_coordinates = $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.4472630173564753', '0.563177771783113', 1);
-        $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.6995994659546061', '0.6158306285039835', 1);
+        $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.711121157323689 ', '0.6189567684193703', 1);
     }
 
 }

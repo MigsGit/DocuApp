@@ -107,29 +107,31 @@
                                         {{index+1}}
                                     </td>
                                     <td>
-                                        <input v-model="rowSaveDocument.uuid" :value="rowSaveDocument.uuid" type="text" class="form-control" id="inlineFormInputGroup" placeholder="UUID">
+                                        <input v-model="rowSaveDocument.uuid" type="text" class="form-control" id="inlineFormInputGroup" placeholder="UUID">
                                     </td>
                                     <td>
                                         <MultiselectElement
                                             v-model="rowSaveDocument.approverName"
                                             :close-on-select="true"
                                             :searchable="true"
-                                            :options="formSaveDocument.optApproverName"
+                                            :options="edocsVar.optApproverName"
                                         />
                                     </td>
                                     <td>
                                         <select v-model="rowSaveDocument.selectPage" class="form-control" id="selectPage" @change="selectedPage(rowSaveDocument, $event.target.value,index)">
                                             <option value="N/A" disabled>N/A</option>
-                                            <option v-for="(optSelectPage,index) in formSaveDocument.optSelectPages" :key="optSelectPage" :value="optSelectPage">
+                                            <option v-for="(optSelectPage,index) in edocsVar.optSelectPages" :key="optSelectPage" :value="optSelectPage">
                                                 {{ optSelectPage }}
                                             </option>
                                         </select>
                                     </td>
                                     <td>
-                                        <input v-model="rowSaveDocument.selectedPage" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Selected Page">
+                                        <input v-model="rowSaveDocument.selectedPage" type="hidden" class="form-control" id="inlineFormInputGroup" placeholder="Selected Page">
+                                        <span>{{ rowSaveDocument.selectedPage }}</span>
                                     </td>
                                     <td>
-                                        <input v-model="rowSaveDocument.ordinates" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Ordinates">
+                                        <input v-model="rowSaveDocument.ordinates" type="hidden" class="form-control" id="inlineFormInputGroup" placeholder="Ordinates">
+                                        <span>{{ rowSaveDocument.ordinates }}</span>
                                     </td>
                                     <td>
                                         <button class="btn btn-danger btn-sm" type="button" data-item-process="add" @click="deleteRowSaveDocuments(index)">
@@ -225,6 +227,8 @@
     const showBtnFirstRow = ref(false);
     const showBtnSecondRow = ref(true);
     const showBtnSave = ref(false)
+    const spanOrdinates = ref(null)
+    // rowSaveDocument.spanOrdinates
 
     const columns =[
         {
@@ -252,7 +256,6 @@
     tblEdocsBaseUrl.value = baseUrl+"api/get_module";
 
     onMounted( () => {
-        //modalOpenPdfImage
         objModalSaveDocument.value = new Modal(document.querySelector("#modalCreateDocument"),{});
         objModalOpenPdfImage.value = new Modal(document.querySelector("#modalOpenPdfImage"),{});
 
@@ -270,10 +273,9 @@
 
     })
 
-    const saveCoordinates = () =>{
-        rowSaveDocuments.value[edocsVar.rowSaveDocumentId].ordinates = `${edocsVar.pxCoordinate} | ${edocsVar.pyCoordinate}`;
-        rowSaveDocuments.value[edocsVar.rowSaveDocumentId].selectedPage = edocsVar.selectedPage;
-    }
+    /*
+        Function
+    */
 
     const toggleRow = (row) => {
       if (row === 'first') {
@@ -292,6 +294,7 @@
       }
     }
 
+
     const show = async () =>{
         window.open(baseUrl+'api/pdf/view?x=100&y=150&page=2', '_blank'); //boostrap.js
     }
@@ -304,30 +307,59 @@
         rowSaveDocuments.value.splice(index,1);
     }
 
-    /*
-        Function
-    */
+    /**
+     * Array of formSaveDocument
+     * Nested Loop for Array of rowSaveDocuments
+     */
     const saveDocument = async ()  => {
         let formData = new FormData();
-        formData.append("document_id", formSaveDocument.value.documentId);
-        formData.append("document_name", formSaveDocument.value.documentName);
-        // console.log('saveDocument',formSaveDocument.value.documentFile);
 
-        formSaveDocument.value.documentFile.forEach((file, index) => {
-            formData.append(`document_file[${index}]`, file);  // Ensures that each file gets a unique key
-        });
+        const {
+            documentId,documentName,
+        } =  formSaveDocument.value;
 
+        [
+            ["document_id", documentId], ["document_name", documentName]
+        ].forEach(([key, value]) =>
+            formData.append(key, value)
+        );
+
+        for (let index = 0; index < rowSaveDocuments.value.length; index++) {
+            const uuid = rowSaveDocuments.value[index].uuid;
+            const ordinates = rowSaveDocuments.value[index].ordinates;
+            const approverName = rowSaveDocuments.value[index].approverName;
+            const selectedPage = rowSaveDocuments.value[index].selectedPage;
+            [
+                ["uuid[]", uuid], ["ordinates[]", ordinates],
+                ["approver_name[]", approverName], ["selected_page[]", selectedPage]
+            ].forEach(([key, value]) =>
+                formData.append(key, value)
+            );
+        }
         await axios.post('/api/save_document', formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
         }).then((response) => {
-            console.log(response);
             tblEdocs.value.dt.draw();
         }).catch((err) => {
             console.log(err);
         });
     }
+
+    /**
+     *  The use of rowSaveDocuments (plural) instead of rowSaveDocument (singular) is a best practice
+     *  when handling multiple rows in a table or list,
+     *  as it represents a collection of rowSaveDocuments
+     *  */
+    const saveCoordinates = () =>{
+        rowSaveDocuments.value[edocsVar.rowSaveDocumentId].ordinates = `${edocsVar.pxCoordinate} | ${edocsVar.pyCoordinate}`;
+        rowSaveDocuments.value[edocsVar.rowSaveDocumentId].selectedPage = edocsVar.selectedPage;
+        objModalOpenPdfImage.value.hide();
+        console.log(rowSaveDocuments);
+
+    }
+
 
 
 </script>

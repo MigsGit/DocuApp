@@ -6,7 +6,6 @@ export default function edocs()
     const objModalOpenPdfImage = ref(null);
     const objModalLoading = ref(null);
     const isModalLoadingComponent = ref(false);
-
     const showBox = ref(false);
     const boxX = ref(0);
     const boxY = ref(0);
@@ -19,7 +18,10 @@ export default function edocs()
         pyCoordinate: '',
         rowSaveDocumentId: '',
         selectedPage: '',
+        optApproverName: [],
+        optSelectPages: [],
     });
+
     const formSaveDocument = ref({
         documentId: null,
         documentName: null,
@@ -45,6 +47,11 @@ export default function edocs()
         // formSaveDocument.value.documentFile =  documentFile.value.files //If multiple files, required variable as array
     }
 
+    /**
+     *  Calculate the Coordinates, ready to save in DB
+     *  Formula: pxCoordinate X / w  | pyCoordinate = Y / h
+     * @param event
+     * */
     const getCoordinates = (event) => {
         const imageElement = event.target;
         const rect = imageElement.getBoundingClientRect();
@@ -55,19 +62,9 @@ export default function edocs()
         height.value = rect.height;
 
         showBox.value = true;
-
-        // const pxCoordinate	= boxX.value / width.value;
-        // const pyCoordinate	= boxY.value / height.value;
         edocsVar.pxCoordinate	= boxX.value / width.value;
         edocsVar.pyCoordinate	= boxY.value / height.value;
-        /*
-            $return['px_py'] = $px."|".$py;
-            echo json_encode($return);
-        */
 
-            console.log('height',height.value);
-            console.log('width',width.value);
-            console.log('rect',rect);
       };
       const getCoordinatesCalculation = async ()  => {
 
@@ -78,6 +75,7 @@ export default function edocs()
       * Update the row value to a new row
       * @param rowSaveDocument
       * @param newRowSaveDocument
+      * @param rowIndex
       */
       const selectedPage  = async (rowSaveDocument,newRowSaveDocument,rowIndex=null)  => {
         rowSaveDocument.selectPage = newRowSaveDocument; // Update the selectPage
@@ -109,7 +107,7 @@ export default function edocs()
     }
 
     const readDocumentById = async (documentId)  => {
-        formSaveDocument.value.optSelectPages = [];
+        edocsVar.optSelectPages = [];
         await axios.get('/api/read_document_by_id',{
             params:{
                 document_id: documentId
@@ -127,7 +125,7 @@ export default function edocs()
 
             //get the page thru array push
             for (let index = 0; index < document_details.page_count; index++) {
-                formSaveDocument.value.optSelectPages.push(index+1)
+                edocsVar.optSelectPages.push(index+1)
             }
         }).catch((err) => {
             console.log(err);
@@ -135,7 +133,7 @@ export default function edocs()
     }
 
     const readApproverNameById  = async (approverId)  => {
-        formSaveDocument.value.optApproverName = [];
+        edocsVar.optApproverName = [];
         await axios.get('/api/read_approver_name',{
             // params:{
             //     approver_id: approverId
@@ -143,9 +141,9 @@ export default function edocs()
         }).then((response) => {
             let data = response.data
             let readApproverById = data.read_approver_by_id
-            // formSaveDocument.value.selectPage = approverId;
-            // formSaveDocument.value.selectAp
-            formSaveDocument.value.optApproverName = readApproverById.map((value) => {
+            // selectPage = approverId;
+            // selectAp
+            edocsVar.optApproverName = readApproverById.map((value) => {
                 return {
                     value: value.id,
                     label: value.name

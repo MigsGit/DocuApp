@@ -14,6 +14,8 @@ class ResourceJob implements ResourceInterface
      */
     public function create($model,array $data){
         date_default_timezone_set('Asia/Manila');
+
+        // return  $data;
         DB::beginTransaction();
         try {
             $data_id = $model::insertGetId($data);
