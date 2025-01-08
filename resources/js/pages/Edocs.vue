@@ -261,6 +261,15 @@
 
         $('#modalCreateDocument').on('hidden.bs.modal', function (e) {
             documentFile.value.value = "";
+            // rowSaveDocuments.value = [];
+            rowSaveDocuments.value = [
+                {
+                    uuid: uuid4(),
+                    approverName: '',
+                    selectPage: "N/A",
+                    ordinates: '',
+                },
+            ];
         });
         $('#modalOpenPdfImage').on('hidden.bs.modal', function (e) {
             rowSaveDocuments.value.forEach(rowSaveDocuments => {
@@ -359,8 +368,6 @@
         console.log(rowSaveDocuments);
 
     }
-
-
 
 </script>
 <style  src="@vueform/multiselect/themes/default.css">

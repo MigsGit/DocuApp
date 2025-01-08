@@ -74,6 +74,31 @@ class ResourceJob implements ResourceInterface
             throw $e;
         }
     }
+    public function readOnlyRelationsAndConditions($model,$data=null,$relations=null,$conditions=null){
+        try {
+
+            $query = $model::query();
+            if($data != null){
+                foreach ($data as $key => $value) {
+                    $query->select($value);
+                }
+            }
+            // return $relations;
+            if($relations != null){
+                $query->with($relations);
+                // $query->with('approver_ordinates','approver_ordinates.user');
+            }
+            if($conditions != null){
+                foreach ($conditions as $key => $value) {
+                    $query->where($key, $value);
+                }
+            }
+            $query->whereNull('deleted_at');
+            return $query->get();
+        } catch (Exception $e) {
+            return response()->json(['isSuccess' => 'false', 'exceptionError' => $e->getMessage()]);
+        }
+    }
 
     // public function inactive(Request $request){
     //     return 'true' ;

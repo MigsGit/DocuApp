@@ -118,13 +118,34 @@ export default function edocs()
             }]
         })
         .then((response) => {
-            // objModalLoading.value.hide();
+
+            let documentDetails = response.data.read_document_by_id[0];
+            console.log(documentDetails);
+
+            let approverOrdinates = response.data.read_document_by_id[0].approver_ordinates;
+
             isModalLoadingComponent.value = false;
-            let document_details = response.data;
-            formSaveDocument.value.documentName = document_details.read_document_by_id[0].document_name;
+            formSaveDocument.value.documentName = response.data.document_name;
+
+            // Empty the array then push the API array to rowSaveDocuments.value
+            rowSaveDocuments.value = []
+            approverOrdinates.forEach((approverOrdinates, index) => {
+                rowSaveDocuments.value.push({
+                    uuid: approverOrdinates.uuid,
+                    approverName: approverOrdinates.approver_id,
+                    selectedPage: approverOrdinates.page_no,
+                    ordinates: approverOrdinates.ordinates,
+
+                });
+            });
+            
+            // for (let i = 0; i < documentDetails.approver_ordinates.length; i++) {
+            //     let uuid = documentDetails.approver_ordinates[i].uuid;
+            //     rowSaveDocuments.value[i].uuid = uuid;
+            // }
 
             //get the page thru array push
-            for (let index = 0; index < document_details.page_count; index++) {
+            for (let index = 0; index < documentDetails.page_count; index++) {
                 edocsVar.optSelectPages.push(index+1)
             }
         }).catch((err) => {
@@ -149,6 +170,8 @@ export default function edocs()
                     label: value.name
                 }
             });
+
+
 
         }).catch((err) => {
             console.log(err);

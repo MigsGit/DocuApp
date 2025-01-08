@@ -46,6 +46,7 @@ class EdocsController extends Controller
         if( isset( $document_id ) ){
             $fk_document = $this->resource_interface->update( Document::class,$document_id,$edocs_request->validated());
         }else{
+            //TODO : DELETE THE APPROVER Coordinates
             $save_document = $this->resource_interface->create( Document::class,$edocs_request->validated());
             $document_id = $save_document->data_id;
         }
@@ -88,9 +89,22 @@ class EdocsController extends Controller
         // return $request->all();
         try {
             $read_document_by_id = $this->resource_interface->readById(Document::class,$request->document_id);
-            // return 'app/' . 'public/edocs/'. $read_document_by_id[0]->id .'/'. $read_document_by_id[0]->filtered_document_name;
+            $data = [
+                '*'
+            ];
+            $relations = [
+                'approver_ordinates',
+                'approver_ordinates.user'
+
+            ];
+            $conditions = [
+                'id' => $request->document_id
+            ];
+            $read_document_by_id = $this->resource_interface->readOnlyRelationsAndConditions(Document::class,$data,$relations,$conditions);
+
+
             $page_count = $this->pdf_service->getPageCount(storage_path('app/' . 'public/edocs/'. $read_document_by_id[0]->id .'/'. $read_document_by_id[0]->filtered_document_name));
-            // $page_count =  Storage::response( 'public/edocs/'. $read_document_by_id[0]->id .'/'. $read_document_by_id[0]->filtered_document_name);
+
             return response()->json(['is_success' => 'true', 'read_document_by_id' => $read_document_by_id , 'page_count' => $page_count]);
         } catch (\Throwable $th) {
             throw $th;
