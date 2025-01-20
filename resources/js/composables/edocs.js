@@ -138,7 +138,7 @@ export default function edocs()
 
                 });
             });
-            
+
             // for (let i = 0; i < documentDetails.approver_ordinates.length; i++) {
             //     let uuid = documentDetails.approver_ordinates[i].uuid;
             //     rowSaveDocuments.value[i].uuid = uuid;
@@ -170,9 +170,6 @@ export default function edocs()
                     label: value.name
                 }
             });
-
-
-
         }).catch((err) => {
             console.log(err);
         });

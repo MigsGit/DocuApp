@@ -6,25 +6,23 @@ import { library } from '@fortawesome/fontawesome-svg-core' /* import the fontaw
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome' /* import font awesome icon component | npm i @fortawesome/vue-fontawesome*/
 import { fas } from '@fortawesome/free-solid-svg-icons' /* import entire style | npm i @fortawesome/free-solid-svg-icons*/
 library.add(fas) /* add icons to the library */
-// @import 'startbootstrap-sb-admin-2/scss/sb-admin-2';
-
-//VueSelect
+// VueSelect
 import MultiselectElement from '@vueform/multiselect'
-// import 'vue-toast-notification/dist/theme-bootstrap.css'
-
-/* Startbootstrap-sb-admin template */
-// import "startbootstrap-sb-admin-2/js/demo/datatables-demo.js"
-/* Layout */
+// Layout
 import AppTemplate from '../js/layouts/App.vue';
-/* Local JS extensions */
+// Local JS extensions
 import '../js/bootstrap.js';
 import router from "./routes";
 import { pinia } from './stores';
+// DataTable
+import DataTable from 'datatables.net-vue3';
+import DataTablesCore from 'datatables.net-bs4';
 
-
+DataTable.use(DataTablesCore)
 createApp(AppTemplate)
 .use(pinia)
 .use(router)
+.component('DataTable',DataTable)
 .component('font-awesome-icon',FontAwesomeIcon)
 .component('MultiselectElement',MultiselectElement)
 .mount('#app');

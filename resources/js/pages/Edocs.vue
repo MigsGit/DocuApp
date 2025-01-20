@@ -3,44 +3,44 @@
         <!-- Page Heading -->
         <h1 class="h3 mb-2 text-gray-800">Edocs Table</h1>
         <div class="row">
-            <div class="col-9">
+            <div class="col-12">
                 <div class="card mt-3">
                     <div class="card-body overflow-auto">
                         <!-- <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal"><i class="fas fa-plus"></i> Add</button> -->
                         <button type="button" class="btn btn-primary" style="float: right !important;" data-toggle="modal" data-target="#saveModal" @click="show"><i class="fas fa-plus"></i> Add</button>
                         <br><br>
-                        <DataTable
-                            ref="tblEdocs"
-                            class="table table-striped table-responsive mt-2"
-                            :columns="columns"
-                            :ajax="tblEdocsBaseUrl"
-                            :options="{
-                                serverSide: true, //Serverside true will load the network
-                                columnDefs:[
-                                    // {orderable:false,target:[0]}
-                                ]
-                            }"
-                        >
-                            <thead>
-                                <tr>
-                                    <th>Action</th>
-                                    <th>Status</th>
-                                    <th class="w-25">Category</th>
-                                    <th class="w-75">Document Name</th>
-                                    <!-- <th class="w-50">Document</th> -->
-                                    <!-- <th>Attachment</th> -->
-                                    <!-- <th>Report Approvers</th> -->
-                                </tr>
-                            </thead>
-                        </DataTable>
+                        <div class="table-responsive">
+                            <DataTable
+                                width="100%" cellspacing="0"
+                                class="table table-bordered mt-2"
+                                ref="tblEdocs"
+                                :columns="columns"
+                                :ajax="tblEdocsBaseUrl"
+                                :options="{
+                                    serverSide: true, //Serverside true will load the network
+                                    columnDefs:[
+                                        // {orderable:false,target:[0]}
+                                    ]
+                                }"
+                            >
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Status</th>
+                                        <th>Category</th>
+                                        <th>Document Name</th>
+                                    </tr>
+                                </thead>
+                            </DataTable>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
     <!-- <ModalComponent modalDialog="modal-dialog modal-md modal-dialog-scrollable" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument"> -->
-    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument">
+
+        <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument">
         <template #body>
             <div class="align-items-center">
                     <!-- Row 1 -->
@@ -191,15 +191,11 @@
 </template>
 
 <script setup>
-    import DataTable from 'datatables.net-vue3';
-    import DataTablesCore from 'datatables.net-bs5';
-    DataTable.use(DataTablesCore);
     import { onMounted, ref, reactive, watch,nextTick } from "vue";
     import ModalComponent from '../components/ModalComponent.vue'
     import LoadingComponent from '../components/LoadingComponent.vue'
     import edocs from "../composables/edocs";
     import {v4 as uuid4} from 'uuid';
-
     const {
         uploadFile,
         getCoordinates,

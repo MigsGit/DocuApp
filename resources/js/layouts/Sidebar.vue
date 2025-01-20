@@ -43,7 +43,7 @@
           aria-controls="collapsePages"
         >
           <i class="fas fa-fw fa-folder"></i>
-          <span>Pages</span>
+          <span>Settings</span>
         </a>
         <div
           id="collapsePages"
@@ -52,14 +52,17 @@
           data-parent="#accordionSidebar"
         >
           <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Other Pages:</h6>
+            <h6 class="collapse-header">Settings Module:</h6>
             <!-- <router-link class="collapse-item" to="/admin/pages/page-not-found">404 Page</router-link> -->
+            <router-link class="collapse-item" :to="{ name: 'user_master' }">
+                <font-awesome-icon class="nav-icon" icon="gauge-high" />&nbsp;<span>User Settings</span>
+            </router-link>
             <!-- <router-link class="collapse-item" to="/admin/pages/blank">Blank Page</router-link> -->
           </div>
         </div>
       </li>
 
-      <!-- Nav Item - Charts -->
+      <!-- Nav Item -->
       <li class="nav-item">
         <router-link class="nav-link" :to="{ name: 'module' }">
             <font-awesome-icon class="nav-icon" icon="gauge-high" />&nbsp;<span>Module</span>
