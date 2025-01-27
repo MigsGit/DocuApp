@@ -1,8 +1,10 @@
 /node_modules
 /public/hot
+/public
 /public/storage
 /storage/*.key
 /vendor
+database/tbl_mailer.sql
 .env
 .env.backup
 .phpunit.result.cache
