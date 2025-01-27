@@ -25,7 +25,7 @@ class MailerJob implements FileInterface
     //TODO : save email
     //TODO : read email
     //TODO : return to blade
-    public function sendMail($data, $request, $to, $cc, $subject){
+    public function sendMail($mail_filename,$data, $request, $to, $cc, $subject){
         Mail::send("mail.{$mail_filename}", function($message) use ($request, $to, $cc, $subject){
             $message->to($to);
             $message->cc($cc);

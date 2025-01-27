@@ -9,9 +9,9 @@
         :to="{ name: 'dashboard' }"
       >
         <div class="sidebar-brand-icon rotate-n-15">
-          <i class="fas fa-laugh-wink"></i>
+          <i class="fas fa-folder"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">Administrators</div>
+        <div class="sidebar-brand-text mx-3">Docu App</div>
       </router-link>
 
       <!-- Divider -->
