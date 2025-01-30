@@ -9,9 +9,9 @@
         :to="{ name: 'dashboard' }"
       >
         <div class="sidebar-brand-icon rotate-n-15">
-          <i class="fas fa-laugh-wink"></i>
+          <i class="fas fa-folder"></i>
         </div>
-        <div class="sidebar-brand-text mx-3">Administrators</div>
+        <div class="sidebar-brand-text mx-3">Docu App</div>
       </router-link>
 
       <!-- Divider -->
@@ -53,11 +53,12 @@
         >
           <div class="bg-white py-2 collapse-inner rounded">
             <h6 class="collapse-header">Settings Module:</h6>
-            <!-- <router-link class="collapse-item" to="/admin/pages/page-not-found">404 Page</router-link> -->
             <router-link class="collapse-item" :to="{ name: 'user_master' }">
-                <font-awesome-icon class="nav-icon" icon="gauge-high" />&nbsp;<span>User Settings</span>
+                <font-awesome-icon class="nav-icon" icon="gauge-high" />&nbsp;<span>User Master</span>
             </router-link>
-            <!-- <router-link class="collapse-item" to="/admin/pages/blank">Blank Page</router-link> -->
+            <router-link class="collapse-item" :to="{ name: 'emailer' }">
+                <font-awesome-icon class="nav-icon" icon="fa-envelope-open-text" />&nbsp;<span>Emailer</span>
+            </router-link>
           </div>
         </div>
       </li>

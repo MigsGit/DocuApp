@@ -21,12 +21,13 @@ use App\Http\Controllers\SettingsController;
 //     return $request->user();
 // });
 Route::controller(EdocsController::class)->group(function () {
-    Route::get('get_module', 'get_module')->name('get_module');
+    Route::get('get_module', 'getModule')->name('get_module');
     Route::get('read_document_by_id', 'readDocumentById')->name('read_document_by_id');
     Route::get('read_approver_name_by_id', 'readApproverNameById')->name('read_approver_name_by_id');
     Route::get('read_approver_name', 'readApproverName')->name('read_approver_name');
     Route::get('convert_pdf_to_image_by_page_number', 'convertPdfToImageByPageNumber')->name('convert_pdf_to_image_by_page_number');
     Route::get('/pdf/view', 'showPdf')->name('/pdf/view');
+    Route::get('get_document_Info_for_email', 'getDocumentInfoForEmail')->name('get_document_Info_for_email');
 
     Route::post('save_document', 'saveDocument')->name('save_document');
 });

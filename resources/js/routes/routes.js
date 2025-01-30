@@ -2,6 +2,7 @@ import IndexComponent from '../pages/Index.vue';
 import Dashboard from '../pages/Dashboard.vue';
 import Module from '../pages/Edocs.vue';
 import UserMaster from '../pages/UserMaster.vue';
+import Emailer from '../pages/Mailer.vue';
 import Login from '../pages/Login.vue'
 import ModalSample from '../components/ModalSample.vue'
 
@@ -41,6 +42,11 @@ export default [
                 path: 'user_master',
                 component: UserMaster,
                 name: 'user_master',
+            },
+            {
+                path: 'emailer',
+                component: Emailer,
+                name: 'emailer',
             }
 
         ],

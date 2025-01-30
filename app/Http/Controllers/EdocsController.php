@@ -67,7 +67,7 @@ class EdocsController extends Controller
         return response()->json(['is_success' => 'true']);
     }
 
-    public function get_module(Request $request){
+    public function getModule(Request $request){
         date_default_timezone_set('Asia/Manila');
 
         try {
@@ -84,6 +84,17 @@ class EdocsController extends Controller
             return response()->json(['is_success' => 'false', 'exceptionError' => e->getMessage()]);
         }
     }
+    public function getDocumentInfoForEmail(Request $request){
+        date_default_timezone_set('Asia/Manila');
+
+        try {
+            return $document = Document::all();
+
+        } catch (Exception $e) {
+            return response()->json(['is_success' => 'false', 'exceptionError' => e->getMessage()]);
+        }
+    }
+
 
     public function readDocumentById(Request $request){
         // return $request->all();
