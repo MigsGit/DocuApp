@@ -5,7 +5,8 @@ Laravel 8, Vue 3, Vue Router 4, Pinia, Webpack Mix
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-![](https://github.com/MigsGit/DocuApp/resources/content/docu-app.png)
+![](https://github.com/MigsGit/DocuApp/blob/v1/resources/content/images/docu-app.png)
+
 <!-- PREVIEW -->
 
 <!-- ## PREVIEW
@@ -25,15 +26,15 @@ Laravel 8, Vue 3, Vue Router 4, Pinia, Webpack Mix
 ## Built With
 
 ```
-npm i #node modueles installation
+npm i 
 
-composer i #composer installation
+composer i
 
-php artisan key:generate #.env APP_KEY generation
+php artisan key:generate 
 
-php artisan migrate  #database migration
+php artisan migrate  
 
-php artisan migrate:status #database migration status
+php artisan migrate:status
 ```
 
 ```
