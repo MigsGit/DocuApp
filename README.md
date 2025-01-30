@@ -21,8 +21,9 @@ Laravel 8, Vue 3, Vue Router 4, Pinia, Webpack Mix
 * [DataTable](https://datatables.net/manual/vue)
 * [Axios](https://github.com/axios/axios)
 * [Font Awesome 4](https://fontawesome.com/)
-
+* [Multiple Select](https://github.com/vueform/multiselect)
 ## Built With
+
 ```
 npm i #node modueles installation
 
@@ -34,11 +35,13 @@ php artisan migrate  #database migration
 
 php artisan migrate:status #database migration status
 ```
+
+```
 npm i @fortawesome/fontawesome-svg-core
 npm i @fortawesome/vue-fontawesome
 npm i @fortawesome/free-solid-svg-icons
 ```
-* [Multiple Select](https://github.com/vueform/multiselect)
+
 ```
 npm i @vueform/multiselect
 
