@@ -179,7 +179,7 @@
             </div>
         </template>
         <template #footer>
-            <button type="button" class="btn btn-outline-success btn-sm"  @click="saveCoordinates"><li class="fas fa-save"></li></button>
+            <button type="button" class="btn btn-outline-success btn-sm"  @click="saveCoordinates">Save <li class="fas fa-save"></li></button>
             <button type="button" id= "closeBtn" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
         </template>
     </ModalComponent>
@@ -195,26 +195,27 @@
     import ModalComponent from '../components/ModalComponent.vue'
     import LoadingComponent from '../components/LoadingComponent.vue'
     import edocs from "../composables/edocs";
+    import useFetchAxios from "../composables/utils/useFetch";
+    import useForm from "../composables/utils/useForm";
     import {v4 as uuid4} from 'uuid';
     const {
-        uploadFile,
-        getCoordinates,
-        selectedPage,
-        readDocumentById,
-        readApproverNameById,
-        edocsVar,
-        boxX,
-        boxY,
-        showBox,
-        objModalOpenPdfImage,
-        objModalSaveDocument,
-        isModalLoadingComponent,
-        imageSrc,
-        formSaveDocument,
-        rowSaveDocuments,
-        tblEdocs,
-        documentFile,
-    } = edocs()
+        uploadFile,getCoordinates,selectedPage,
+        readDocumentById,readApproverNameById,edocsVar,
+        boxX,boxY,showBox,
+        objModalOpenPdfImage,objModalSaveDocument,
+        imageSrc,formSaveDocument,rowSaveDocuments,
+        tblEdocs,documentFile,
+        // isModalLoadingComponent, //Cannot read the variable name
+    } = edocs();
+
+    const {
+        axiosFetchData,isModalLoadingComponent,
+    } = useFetchAxios();
+
+    const {
+        axiosSaveData
+    } = useForm();
+
 
     //Ref State
     const tblEdocsBaseUrl = ref(null);
@@ -222,8 +223,8 @@
     const showSecondRow = ref(false);
     const showBtnFirstRow = ref(false);
     const showBtnSecondRow = ref(true);
-    const showBtnSave = ref(false)
-    const spanOrdinates = ref(null)
+    const showBtnSave = ref(false);
+    const spanOrdinates = ref(null);
     // rowSaveDocument.spanOrdinates
 
     const columns =[
@@ -249,6 +250,7 @@
         { data: 'document_name'},
     ];
 
+    baseUrl+"api/get_module"
     tblEdocsBaseUrl.value = baseUrl+"api/get_module";
 
     onMounted( () => {
@@ -341,6 +343,12 @@
                 formData.append(key, value)
             );
         }
+
+        axiosSaveData(formData,'/api/save_document', (response) =>{
+            tblEdocs.value.dt.draw();
+            console.log(response);
+        });
+        return;
         await axios.post('/api/save_document', formData, {
             headers: {
                 "Content-Type": "multipart/form-data",

@@ -1,12 +1,9 @@
 /node_modules
-/public/hot
 /public/css
 /public/js
 /public/storage
 /storage/*.key
 /vendor
-database/tbl_mailer.sql
-/database
 .env
 .env.backup
 .phpunit.result.cache

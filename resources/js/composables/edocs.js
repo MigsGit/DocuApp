@@ -1,17 +1,20 @@
 import { ref, inject,reactive } from 'vue'
 import {v4 as uuid4} from 'uuid';
+import useFetch from './utils/useFetch';
 export default function edocs()
 {
     const objModalSaveDocument = ref(null);
     const objModalOpenPdfImage = ref(null);
     const objModalLoading = ref(null);
-    const isModalLoadingComponent = ref(false);
+
     const showBox = ref(false);
     const boxX = ref(0);
     const boxY = ref(0);
     const height = ref(0);
     const width = ref(0);
     const imageSrc = ref(null);
+    const { axiosFetchData } = useFetch(); // Call the useFetch function
+
 
     const edocsVar = reactive({
         pxCoordinate: '',
@@ -66,9 +69,7 @@ export default function edocs()
         edocsVar.pyCoordinate	= boxY.value / height.value;
 
       };
-      const getCoordinatesCalculation = async ()  => {
 
-      }
       /**
       * Getting of current value of select option inside the v-for
       * You need to passed param, row and new row
@@ -81,50 +82,33 @@ export default function edocs()
         rowSaveDocument.selectPage = newRowSaveDocument; // Update the selectPage
         edocsVar.rowSaveDocumentId = rowIndex;
         edocsVar.selectedPage = newRowSaveDocument;
-        await axios.get('/api/convert_pdf_to_image_by_page_number',{
-            params:{
-                select_page: rowSaveDocument.selectPage,
-                document_id: formSaveDocument.value.documentId
-            },
-            transformRequest: [(data, headers) => {
-                // Modify the request config here (similar to beforeSend in jQuery)
-                headers['Authorization'] = 'Bearer your-token';
-                console.log('Request config modified before sending:', headers);
-                // objModalLoading.value.show();
-                isModalLoadingComponent.value = true;
-            }]
-        }).then((response) => {
+
+        let params ={
+            select_page: rowSaveDocument.selectPage,
+            document_id: formSaveDocument.value.documentId
+        }
+        await axiosFetchData(params, `${baseUrl}api/convert_pdf_to_image_by_page_number`, (response) => {
             let data = response.data;
             objModalOpenPdfImage.value.show();
             // objModalLoading.value.hide();
-            isModalLoadingComponent.value = false;
             imageSrc.value = data.image;
             width.value = data.width;
             height.value = data.height;
-        }).catch((err) => {
-            console.log(err);
         });
     }
 
     const readDocumentById = async (documentId)  => {
         edocsVar.optSelectPages = [];
-        await axios.get('/api/read_document_by_id',{
-            params:{
-                document_id: documentId
-            },
-            transformRequest: [(data, headers) => {
-                // objModalLoading.value.show();
-                isModalLoadingComponent.value = true;
-            }]
-        })
-        .then((response) => {
-
+        let params = {
+            document_id: documentId
+        }
+        await axiosFetchData(params, `${baseUrl}api/read_document_by_id`, (response) => {
+            console.log("Fetched Users:", response.data);
             let documentDetails = response.data.read_document_by_id[0];
             console.log(documentDetails);
 
             let approverOrdinates = response.data.read_document_by_id[0].approver_ordinates;
 
-            isModalLoadingComponent.value = false;
             formSaveDocument.value.documentName = response.data.document_name;
 
             // Empty the array then push the API array to rowSaveDocuments.value
@@ -138,18 +122,10 @@ export default function edocs()
 
                 });
             });
-
-            // for (let i = 0; i < documentDetails.approver_ordinates.length; i++) {
-            //     let uuid = documentDetails.approver_ordinates[i].uuid;
-            //     rowSaveDocuments.value[i].uuid = uuid;
-            // }
-
             //get the page thru array push
             for (let index = 0; index < documentDetails.page_count; index++) {
                 edocsVar.optSelectPages.push(index+1)
             }
-        }).catch((err) => {
-            console.log(err);
         });
     }
 
@@ -175,7 +151,6 @@ export default function edocs()
         });
     }
 
-
     return {
         uploadFile,
         getCoordinates,
@@ -186,7 +161,6 @@ export default function edocs()
         objModalOpenPdfImage,
         objModalSaveDocument,
         objModalLoading,
-        isModalLoadingComponent,
         boxX,
         boxY,
         showBox,
@@ -196,4 +170,4 @@ export default function edocs()
         tblEdocs,
         documentFile,
     }
-}
+};

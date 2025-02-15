@@ -41,7 +41,7 @@ class EdocsController extends Controller
      */
     public function saveDocument(EdocsRequest $edocs_request){
 
-        // return $edocs_request->all();
+        return $edocs_request->all();
         $document_id = $edocs_request->document_id;
         if( isset( $document_id ) ){
             $fk_document = $this->resource_interface->update( Document::class,$document_id,$edocs_request->validated());

@@ -7,11 +7,6 @@ Laravel 8, Vue 3, Vue Router 4, Pinia, Webpack Mix
 ## About The Project
 ![](https://github.com/MigsGit/DocuApp/blob/v1/resources/content/images/docu-app.png)
 
-<!-- PREVIEW -->
-
-<!-- ## PREVIEW
-![](https://github.com/MigsGit/VueTicketingSystem/blob/main/resources/content/vue-ticketing.gif) -->
-
 ## Built With
 
 * [Laravel 8](https://laravel.com/docs/8.x/readme)
@@ -23,7 +18,7 @@ Laravel 8, Vue 3, Vue Router 4, Pinia, Webpack Mix
 * [Axios](https://github.com/axios/axios)
 * [Font Awesome 4](https://fontawesome.com/)
 * [Multiple Select](https://github.com/vueform/multiselect)
-## Built With
+## Installation
 
 ```
 npm i 
