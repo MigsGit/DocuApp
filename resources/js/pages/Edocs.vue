@@ -234,6 +234,7 @@
             searchable: false,
             createdCell(cell) {
                 let btnEdocs = cell.querySelector("#btnEdocs")
+                let btnEdocsView = cell.querySelector("#btnEdocsView")
                 if((btnEdocs !== null)){
                     btnEdocs.addEventListener('click', function(event){
                         let documentId = this.getAttribute('data-id')
@@ -241,6 +242,11 @@
                         readDocumentById(documentId);
                         readApproverNameById(1);
                         objModalSaveDocument.value.show()
+                    });
+                }
+                if((btnEdocsView !== null)){
+                    btnEdocsView.addEventListener('click', function(event){
+                        let documentId = this.getAttribute('data-id');
                     });
                 }
             },
@@ -279,11 +285,9 @@
         });
 
     })
-
     /*
         Function
     */
-
     const toggleRow = (row) => {
       if (row === 'first') {
         showFirstRow.value = true;
@@ -300,20 +304,15 @@
         showBtnSave.value = true;
       }
     }
-
-
     const show = async () =>{
         window.open(baseUrl+'api/pdf/view?x=100&y=150&page=2', '_blank'); //boostrap.js
     }
-
     const addRowSaveDocuments = async () =>{
         rowSaveDocuments.value.push({   uuid: uuid4(), selectPage: 'N/A' ,approverName: '', ordinates: '' })
     }
-
     const deleteRowSaveDocuments = async (index) =>{
         rowSaveDocuments.value.splice(index,1);
     }
-
     /**
      * Array of formSaveDocument
      * Nested Loop for Array of rowSaveDocuments
@@ -359,7 +358,6 @@
             console.log(err);
         });
     }
-
     /**
      *  The use of rowSaveDocuments (plural) instead of rowSaveDocument (singular) is a best practice
      *  when handling multiple rows in a table or list,
