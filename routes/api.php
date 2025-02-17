@@ -21,7 +21,8 @@ use App\Http\Controllers\SettingsController;
 //     return $request->user();
 // });
 Route::controller(EdocsController::class)->group(function () {
-    Route::get('get_module', 'getModule')->name('get_module');
+    Route::get('load_edocs', 'loadEdocs')->name('load_edocs');
+    Route::get('load_approver_by_doc_id', 'loadApproverByDocId')->name('load_approver_by_doc_id');
     Route::get('read_document_by_id', 'readDocumentById')->name('read_document_by_id');
     Route::get('read_approver_name_by_id', 'readApproverNameById')->name('read_approver_name_by_id');
     Route::get('read_approver_name', 'readApproverName')->name('read_approver_name');

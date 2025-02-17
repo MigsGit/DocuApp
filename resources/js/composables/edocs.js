@@ -6,7 +6,10 @@ export default function edocs()
     const objModalSaveDocument = ref(null);
     const objModalOpenPdfImage = ref(null);
     const objModalLoading = ref(null);
-
+    const modalEdocs = reactive({
+        View : ""
+    })
+    const tblApproverByDocId = ref(null)
     const showBox = ref(false);
     const boxX = ref(0);
     const boxY = ref(0);
@@ -161,6 +164,7 @@ export default function edocs()
         objModalOpenPdfImage,
         objModalSaveDocument,
         objModalLoading,
+        modalEdocs,
         boxX,
         boxY,
         showBox,
@@ -168,6 +172,7 @@ export default function edocs()
         formSaveDocument,
         rowSaveDocuments,
         tblEdocs,
+        tblApproverByDocId,
         documentFile,
     }
 };

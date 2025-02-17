@@ -42,7 +42,7 @@
     import Topbar from "../layouts/Topbar.vue";
     import Sidebar from "../layouts/Sidebar.vue";
     import Footers from "../layouts/Footer.vue";
-    import sbadmin2 from '../composables/sb-admin-2.js'
+    import sbadmin2 from '../composables/utils/sb-admin-2.js'
     import {onMounted,onBeforeMount,version} from 'vue'
 
     onMounted( async () => {

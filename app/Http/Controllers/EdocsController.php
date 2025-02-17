@@ -23,7 +23,6 @@ class EdocsController extends Controller
 {
     protected $resource_interface;
     protected $edocs_interface;
-
     protected $pdf_service;
     /**
      * Create a new job instance.
@@ -68,13 +67,11 @@ class EdocsController extends Controller
         return response()->json(['is_success' => 'true']);
     }
 
-    public function getModule(Request $request){
+    public function loadEdocs(Request $request){
         date_default_timezone_set('Asia/Manila');
-
         try {
             // $edocs_resource= EdocsResource::collection( Document::all());// Secure API response
             // Cache::tags(['edocs_resource'])->flush();
-            Cache::forget('edocs_resource');
             $edocs_resource = Cache::remember('edocs_resource', now()->addMinutes(10), function () {
                 return EdocsResource::collection( Document::all());
             });
@@ -87,6 +84,37 @@ class EdocsController extends Controller
                 // return $btn = '<button data-id = "'.$row->id.'" id="editResProcedure" type="button" class="btn btn-info btn-sm" title="Edit"></i>Edit</button>';
             })
             ->rawColumns(['get_action'])
+            ->make(true);
+        } catch (Exception $e) {
+            return response()->json(['is_success' => 'false', 'exceptionError' => e->getMessage()]);
+        }
+    }
+    public function loadApproverByDocId(Request $request){
+        date_default_timezone_set('Asia/Manila');
+        try {
+            $document_id = ( isset($request->document_id) ) ? decrypt($request->document_id) : 0;
+            $data = '';
+            $relations = [
+
+            ];
+            $conditions = [
+
+                'fk_document' => $document_id
+                // 'fk_document' => 6
+            ];
+            $read_document_by_id = $this->resource_interface->readOnlyRelationsAndConditions(ApproverOrdinates::class,$data,$relations,$conditions);
+            return DataTables::of($read_document_by_id)
+            ->addColumn('get_num',function($row){
+                $result = '';
+                $result .= '1';
+                return $result;
+            })
+            ->addColumn('get_status',function($row){
+                $result = '';
+                $result .= 'hello';
+                return $result;
+            })
+            ->rawColumns(['get_num','get_status'])
             ->make(true);
         } catch (Exception $e) {
             return response()->json(['is_success' => 'false', 'exceptionError' => e->getMessage()]);
@@ -107,6 +135,7 @@ class EdocsController extends Controller
     public function readDocumentById(Request $request){
         try {
             $read_document_by_id = $this->resource_interface->readById(Document::class,$request->document_id);
+            $document_id = decrypt($request->document_id);
             $data = [
                 '*'
             ];
@@ -116,12 +145,12 @@ class EdocsController extends Controller
 
             ];
             $conditions = [
-                'id' => decrypt($request->document_id)
+                'id' => $document_id
             ];
             $read_document_by_id = $this->resource_interface->readOnlyRelationsAndConditions(Document::class,$data,$relations,$conditions);
 
 
-            $page_count = $this->pdf_service->getPageCount(storage_path('app/' . 'public/edocs/'. $read_document_by_id[0]->id .'/'. $read_document_by_id[0]->filtered_document_name));
+            $page_count = $this->pdf_service->getPageCount(storage_path('app/' . 'public/edocs/'. $document_id .'/'. $read_document_by_id[0]->filtered_document_name));
 
             return response()->json(['is_success' => 'true', 'read_document_by_id' => $read_document_by_id , 'page_count' => $page_count]);
         } catch (\Throwable $th) {

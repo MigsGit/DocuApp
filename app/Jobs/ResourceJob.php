@@ -15,7 +15,6 @@ class ResourceJob implements ResourceInterface
     public function create($model,array $data){
         date_default_timezone_set('Asia/Manila');
 
-        // return  $data;
         DB::beginTransaction();
         try {
             $data_id = $model::insertGetId($data);
@@ -99,21 +98,4 @@ class ResourceJob implements ResourceInterface
             return response()->json(['isSuccess' => 'false', 'exceptionError' => $e->getMessage()]);
         }
     }
-
-    // public function inactive(Request $request){
-    //     return 'true' ;
-    //     try {
-    //         return response()->json(['is_success' => 'true']);
-    //     } catch (Exception $e) {
-    //         return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
-    //     }
-    // }
-    // public function delete(Request $request){
-    //     return 'true' ;
-    //     try {
-    //         return response()->json(['is_success' => 'true']);
-    //     } catch (Exception $e) {
-    //         return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
-    //     }
-    // }
 }

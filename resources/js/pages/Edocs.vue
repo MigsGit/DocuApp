@@ -39,8 +39,7 @@
         </div>
     </div>
     <!-- <ModalComponent modalDialog="modal-dialog modal-md modal-dialog-scrollable" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument"> -->
-
-        <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument">
+    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument">
         <template #body>
             <div class="align-items-center">
                     <!-- Row 1 -->
@@ -80,7 +79,6 @@
                         >
                         </div>
                     </div>
-
                 </div>
             <!-- Row 2 -->
                 <div v-show="showSecondRow" class="row animate__animated animate__slideInRight">
@@ -178,9 +176,48 @@
                 </div>
             </div>
         </template>
+    </ModalComponent>
+    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-folder" title="Document Approval" id="modalEdocsView">
+        <template #body>
+            <div class="row mb-2">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <!-- :ajax="{
+                                url: tblApproverBaseUrl,
+                                data: function (d) {
+                                    d.document_id = documentId; Pass dynamic parameter
+                                }
+                            }" -->
+                        <DataTable
+                            width="100%" cellspacing="0"
+                            class="table table-bordered mt-2"
+                            ref="tblApproverByDocId"
+                            :ajax="tblApproverBaseUrl"
+                            :columns="columnApprovers"
+                            :options="{
+                                serverSide: true, //Serverside true will load the network
+                                columnDefs:[
+                                    // {orderable:false,target:[0]}
+                                ],
+                                paging: false,
+                            }"
+                        >
+                            <thead>
+                                <tr>
+                                    <th>No {{ documentId }}</th>
+                                    <th>Status</th>
+                                    <th>Name</th>
+                                    <th>PageNo</th>
+                                    <th>ApproverRemarks</th>
+                                </tr>
+                            </thead>
+                        </DataTable>
+                    </div>
+                </div>
+            </div>
+        </template>
         <template #footer>
-            <button type="button" class="btn btn-outline-success btn-sm"  @click="saveCoordinates">Save <li class="fas fa-save"></li></button>
-            <button type="button" id= "closeBtn" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+            <button type="button" id= "closeBtn" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>
         </template>
     </ModalComponent>
     <!--
@@ -202,9 +239,10 @@
         uploadFile,getCoordinates,selectedPage,
         readDocumentById,readApproverNameById,edocsVar,
         boxX,boxY,showBox,
-        objModalOpenPdfImage,objModalSaveDocument,
+        objModalOpenPdfImage,objModalSaveDocument, modalEdocs,
         imageSrc,formSaveDocument,rowSaveDocuments,
-        tblEdocs,documentFile,
+        tblEdocs,tblApproverByDocId,
+        documentFile,
         // isModalLoadingComponent, //Cannot read the variable name
     } = edocs();
 
@@ -219,13 +257,16 @@
 
     //Ref State
     const tblEdocsBaseUrl = ref(null);
+    const tblApproverBaseUrl = ref(null);
+    const adocumentId = ref(null);
     const showFirstRow = ref(true);
     const showSecondRow = ref(false);
     const showBtnFirstRow = ref(false);
     const showBtnSecondRow = ref(true);
     const showBtnSave = ref(false);
-    const spanOrdinates = ref(null);
     // rowSaveDocument.spanOrdinates
+    tblEdocsBaseUrl.value = baseUrl+"api/load_edocs";
+    tblApproverBaseUrl.value = baseUrl+"api/load_approver_by_doc_id";
 
     const columns =[
         {
@@ -247,6 +288,8 @@
                 if((btnEdocsView !== null)){
                     btnEdocsView.addEventListener('click', function(event){
                         let documentId = this.getAttribute('data-id');
+                        modalEdocs.View.show();
+                        tblApproverByDocId.value.dt.ajax.url( `${tblApproverBaseUrl.value}?document_id=${documentId}` ).draw();
                     });
                 }
             },
@@ -255,17 +298,22 @@
         { data: 'category_id'},
         { data: 'document_name'},
     ];
-
-    baseUrl+"api/get_module"
-    tblEdocsBaseUrl.value = baseUrl+"api/get_module";
+    const columnApprovers =[
+        { data: 'get_num'},
+        { data: 'get_status'},
+        { data: 'approver_id'},
+        { data: 'page_no'},
+        { data: 'approver_remarks'},
+    ];
+    //Table Url
 
     onMounted( () => {
         objModalSaveDocument.value = new Modal(document.querySelector("#modalCreateDocument"),{});
         objModalOpenPdfImage.value = new Modal(document.querySelector("#modalOpenPdfImage"),{});
+        modalEdocs.View = new Modal(document.querySelector("#modalEdocsView"),{});
 
         $('#modalCreateDocument').on('hidden.bs.modal', function (e) {
             documentFile.value.value = "";
-            // rowSaveDocuments.value = [];
             rowSaveDocuments.value = [
                 {
                     uuid: uuid4(),
