@@ -181,6 +181,10 @@
         <template #body>
             <div class="row mb-2">
                 <div class="col-12">
+                    <a href=""></a>
+                </div>
+                <div class="col-12">
+                    <a class="btn btn-outline-primary" @click="btnViewEdocs(documentId)">View Document</a>
                     <div class="table-responsive">
                         <!-- :ajax="{
                                 url: tblApproverBaseUrl,
@@ -258,7 +262,8 @@
     //Ref State
     const tblEdocsBaseUrl = ref(null);
     const tblApproverBaseUrl = ref(null);
-    const adocumentId = ref(null);
+    const documentId = ref(null);
+    // const aDocumentId = ref(null);
     const showFirstRow = ref(true);
     const showSecondRow = ref(false);
     const showBtnFirstRow = ref(false);
@@ -287,9 +292,11 @@
                 }
                 if((btnEdocsView !== null)){
                     btnEdocsView.addEventListener('click', function(event){
-                        let documentId = this.getAttribute('data-id');
+                        documentId.value = this.getAttribute('data-id');
+                        // aDocumentId.value = documentId;
                         modalEdocs.View.show();
-                        tblApproverByDocId.value.dt.ajax.url( `${tblApproverBaseUrl.value}?document_id=${documentId}` ).draw();
+                        tblApproverByDocId.value.dt.ajax.url( `${tblApproverBaseUrl.value}?document_id=${documentId.value}` ).draw();
+
                     });
                 }
             },
@@ -305,8 +312,8 @@
         { data: 'page_no'},
         { data: 'approver_remarks'},
     ];
-    //Table Url
 
+    //Table Url
     onMounted( () => {
         objModalSaveDocument.value = new Modal(document.querySelector("#modalCreateDocument"),{});
         objModalOpenPdfImage.value = new Modal(document.querySelector("#modalOpenPdfImage"),{});
@@ -353,13 +360,18 @@
       }
     }
     const show = async () =>{
-        window.open(baseUrl+'api/pdf/view?x=100&y=150&page=2', '_blank'); //boostrap.js
+
     }
     const addRowSaveDocuments = async () =>{
         rowSaveDocuments.value.push({   uuid: uuid4(), selectPage: 'N/A' ,approverName: '', ordinates: '' })
     }
     const deleteRowSaveDocuments = async (index) =>{
         rowSaveDocuments.value.splice(index,1);
+    }
+    const btnViewEdocs = (documentId) =>{
+        window.open(`${baseUrl}api/pdf/view?documentId=`, '_blank'); //boostrap.js
+        alert('sdasd',baseUrl)
+        return;
     }
     /**
      * Array of formSaveDocument

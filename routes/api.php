@@ -27,8 +27,9 @@ Route::controller(EdocsController::class)->group(function () {
     Route::get('read_approver_name_by_id', 'readApproverNameById')->name('read_approver_name_by_id');
     Route::get('read_approver_name', 'readApproverName')->name('read_approver_name');
     Route::get('convert_pdf_to_image_by_page_number', 'convertPdfToImageByPageNumber')->name('convert_pdf_to_image_by_page_number');
-    Route::get('pdf/view', 'showPdf')->name('/pdf/view');
+    Route::get('pdf/view', 'showPdfWithSignatures')->name('/pdf/view');
     Route::get('get_document_Info_for_email', 'getDocumentInfoForEmail')->name('get_document_Info_for_email');
+    Route::get('encrypt_decrypt_variable', 'encryptDecryptVariable')->name('encrypt_decrypt_variable');
 
     Route::post('save_document', 'saveDocument')->name('save_document');
 });

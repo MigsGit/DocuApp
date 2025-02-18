@@ -5,18 +5,17 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Document;
+use App\Models\ApproverOrdinates;
 use App\Services\PdfService;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
-use App\Models\ApproverOrdinates;
-use App\Interfaces\EdocsInterface;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
 use App\Http\Requests\EdocsRequest;
 use App\Http\Resources\EdocsResource;
+use App\Interfaces\EdocsInterface;
+use App\Interfaces\CommonInterface;
 use App\Interfaces\ResourceInterface;
-// use Illuminate\Support\Facades\Crypt;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Storage;
-// use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 
 class EdocsController extends Controller
@@ -24,15 +23,17 @@ class EdocsController extends Controller
     protected $resource_interface;
     protected $edocs_interface;
     protected $pdf_service;
+    protected $common_interface;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(ResourceInterface $resource_interface,EdocsInterface $edocs_interface,PdfService $pdf_service) {
+    public function __construct(ResourceInterface $resource_interface,EdocsInterface $edocs_interface,PdfService $pdf_service,CommonInterface $common_interface) {
         $this->resource_interface = $resource_interface;
         $this->edocs_interface = $edocs_interface;
         $this->pdf_service = $pdf_service;
+        $this->common_interface = $common_interface;
     }
 
     /**
@@ -199,7 +200,9 @@ class EdocsController extends Controller
         }
     }
 
-    public function showPdf(Request $request){
+    public function showPdfWithSignatures(Request $request){
+        return $documentId = decrypt($request->documentId);
+
         /**
          * TODO: get image employee number to DB
          * TODO: get file path, ordinates and page DB
@@ -212,5 +215,8 @@ class EdocsController extends Controller
         // $insert_image_at_coordinates = $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.4472630173564753', '0.563177771783113', 1);
         $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.711121157323689 ', '0.6189567684193703', 1);
     }
+
+
+
 
 }
