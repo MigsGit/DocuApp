@@ -123,7 +123,7 @@ class MakeInterfaceCommand extends Command
      */
     public function getSourceFilePath()
     {
-        return base_path('App\\Interfaces') .'\\' .$this->getSingularClassName($this->argument('name')) . 'Interface.php';
+        return base_path('app/Interfaces') .'/' .$this->getSingularClassName($this->argument('name')) . '.php';
     }
 
     /**

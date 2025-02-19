@@ -2,13 +2,14 @@
 
 namespace App\Interfaces;
 
-interface FileInterface
+interface EdocsInterface
 {
     /**
      * Create a interface
      *
      * @param $model,array $data
      */
-    public function slug($string, $slug, $extra);
+    public function uploadFile($temp_file,$id);
+
 
 }

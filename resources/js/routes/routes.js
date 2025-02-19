@@ -7,6 +7,24 @@ import Login from '../pages/Login.vue'
 import ModalSample from '../components/ModalSample.vue'
 
 
+function checkIfSessionExist(to, from, next) {
+    // axios.get('api/check_if_session_exist')
+    //     .then((response) => {
+    //         if(response['data'].status === 200){
+    //             next();
+    //         }else{
+    //             next({
+    //                 path: '/docu-app',
+    //                 replace: true
+    //             });
+    //         }
+    //     })
+    //     .catch((err) => {
+    //         console.log(err)
+    //     })
+    next();
+
+}
 
 export default [
     {
@@ -20,7 +38,9 @@ export default [
     //     name: 'modal',
     // },
     {
+        beforeEnter: checkIfSessionExist,
         path: '/docu-app/main/',
+        name: 'main',
         component: IndexComponent,
         children: [
             {

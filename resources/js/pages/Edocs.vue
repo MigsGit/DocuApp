@@ -39,8 +39,7 @@
         </div>
     </div>
     <!-- <ModalComponent modalDialog="modal-dialog modal-md modal-dialog-scrollable" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument"> -->
-
-        <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument">
+    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument">
         <template #body>
             <div class="align-items-center">
                     <!-- Row 1 -->
@@ -80,7 +79,6 @@
                         >
                         </div>
                     </div>
-
                 </div>
             <!-- Row 2 -->
                 <div v-show="showSecondRow" class="row animate__animated animate__slideInRight">
@@ -180,7 +178,54 @@
         </template>
         <template #footer>
             <button type="button" class="btn btn-outline-success btn-sm"  @click="saveCoordinates"><li class="fas fa-save"></li></button>
-            <button type="button" id= "closeBtn" class="btn btn-secondary btn-sm" data-dismiss="modal">Close</button>
+            <button type="button" id= "closeBtn" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>
+        </template>
+    </ModalComponent>
+    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-folder" title="Document Approval" id="modalEdocsView">
+        <template #body>
+            <div class="row mb-2">
+                <div class="col-12">
+                    <a href=""></a>
+                </div>
+                <div class="col-12">
+                    <a class="btn btn-outline-primary" @click="btnViewEdocs(documentId)"><font-awesome-icon class="nav-icon" icon="fa-file" />&nbsp;View Document</a>
+                    <div class="table-responsive">
+                        <!-- :ajax="{
+                                url: tblApproverBaseUrl,
+                                data: function (d) {
+                                    d.document_id = documentId; Pass dynamic parameter
+                                }
+                            }" -->
+                        <DataTable
+                            width="100%" cellspacing="0"
+                            class="table table-bordered mt-2"
+                            ref="tblApproverByDocId"
+                            :ajax="tblApproverBaseUrl"
+                            :columns="columnApprovers"
+                            :options="{
+                                serverSide: true, //Serverside true will load the network
+                                columnDefs:[
+                                    // {orderable:false,target:[0]}
+                                ],
+                                paging: false,
+                            }"
+                        >
+                            <thead>
+                                <tr>
+                                    <th>No {{ documentId }}</th>
+                                    <th>Status</th>
+                                    <th>Name</th>
+                                    <th>PageNo</th>
+                                    <th>ApproverRemarks</th>
+                                </tr>
+                            </thead>
+                        </DataTable>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template #footer>
+            <button type="button" id= "closeBtn" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>
         </template>
     </ModalComponent>
     <!--
@@ -195,36 +240,42 @@
     import ModalComponent from '../components/ModalComponent.vue'
     import LoadingComponent from '../components/LoadingComponent.vue'
     import edocs from "../composables/edocs";
+    import useFetchAxios from "../composables/utils/useFetch";
+    import useForm from "../composables/utils/useForm";
     import {v4 as uuid4} from 'uuid';
     const {
-        uploadFile,
-        getCoordinates,
-        selectedPage,
-        readDocumentById,
-        readApproverNameById,
-        edocsVar,
-        boxX,
-        boxY,
-        showBox,
-        objModalOpenPdfImage,
-        objModalSaveDocument,
-        isModalLoadingComponent,
-        imageSrc,
-        formSaveDocument,
-        rowSaveDocuments,
-        tblEdocs,
+        uploadFile,getCoordinates,selectedPage,
+        readDocumentById,readApproverNameById,edocsVar,
+        boxX,boxY,showBox,
+        objModalOpenPdfImage,objModalSaveDocument, modalEdocs,
+        imageSrc,formSaveDocument,rowSaveDocuments,
+        tblEdocs,tblApproverByDocId,
         documentFile,
-    } = edocs()
+        // isModalLoadingComponent, //Cannot read the variable name
+    } = edocs();
+
+    const {
+        axiosFetchData,isModalLoadingComponent,
+    } = useFetchAxios();
+
+    const {
+        axiosSaveData
+    } = useForm();
+
 
     //Ref State
     const tblEdocsBaseUrl = ref(null);
+    const tblApproverBaseUrl = ref(null);
+    const documentId = ref(null);
+    // const aDocumentId = ref(null);
     const showFirstRow = ref(true);
     const showSecondRow = ref(false);
     const showBtnFirstRow = ref(false);
     const showBtnSecondRow = ref(true);
-    const showBtnSave = ref(false)
-    const spanOrdinates = ref(null)
+    const showBtnSave = ref(false);
     // rowSaveDocument.spanOrdinates
+    tblEdocsBaseUrl.value = baseUrl+"api/load_edocs";
+    tblApproverBaseUrl.value = baseUrl+"api/load_approver_by_doc_id";
 
     const columns =[
         {
@@ -233,6 +284,7 @@
             searchable: false,
             createdCell(cell) {
                 let btnEdocs = cell.querySelector("#btnEdocs")
+                let btnEdocsView = cell.querySelector("#btnEdocsView")
                 if((btnEdocs !== null)){
                     btnEdocs.addEventListener('click', function(event){
                         let documentId = this.getAttribute('data-id')
@@ -242,22 +294,37 @@
                         objModalSaveDocument.value.show()
                     });
                 }
+                if((btnEdocsView !== null)){
+                    btnEdocsView.addEventListener('click', function(event){
+                        documentId.value = this.getAttribute('data-id');
+                        // aDocumentId.value = documentId;
+                        modalEdocs.View.show();
+                        tblApproverByDocId.value.dt.ajax.url( `${tblApproverBaseUrl.value}?document_id=${documentId.value}` ).draw();
+
+                    });
+                }
             },
         },
         { data: 'status'},
         { data: 'category_id'},
         { data: 'document_name'},
     ];
+    const columnApprovers =[
+        { data: 'get_num'},
+        { data: 'get_status'},
+        { data: 'approver_id'},
+        { data: 'page_no'},
+        { data: 'approver_remarks'},
+    ];
 
-    tblEdocsBaseUrl.value = baseUrl+"api/get_module";
-
+    //Table Url
     onMounted( () => {
         objModalSaveDocument.value = new Modal(document.querySelector("#modalCreateDocument"),{});
         objModalOpenPdfImage.value = new Modal(document.querySelector("#modalOpenPdfImage"),{});
+        modalEdocs.View = new Modal(document.querySelector("#modalEdocsView"),{});
 
         $('#modalCreateDocument').on('hidden.bs.modal', function (e) {
             documentFile.value.value = "";
-            // rowSaveDocuments.value = [];
             rowSaveDocuments.value = [
                 {
                     uuid: uuid4(),
@@ -277,11 +344,9 @@
         });
 
     })
-
     /*
         Function
     */
-
     const toggleRow = (row) => {
       if (row === 'first') {
         showFirstRow.value = true;
@@ -298,20 +363,18 @@
         showBtnSave.value = true;
       }
     }
-
-
     const show = async () =>{
-        window.open(baseUrl+'api/pdf/view?x=100&y=150&page=2', '_blank'); //boostrap.js
-    }
 
+    }
     const addRowSaveDocuments = async () =>{
         rowSaveDocuments.value.push({   uuid: uuid4(), selectPage: 'N/A' ,approverName: '', ordinates: '' })
     }
-
     const deleteRowSaveDocuments = async (index) =>{
         rowSaveDocuments.value.splice(index,1);
     }
-
+    const btnViewEdocs = (documentId) =>{
+        window.open(`${baseUrl}api/pdf/view?documentId=${documentId}`, '_blank'); //boostrap.js
+    }
     /**
      * Array of formSaveDocument
      * Nested Loop for Array of rowSaveDocuments
@@ -341,6 +404,12 @@
                 formData.append(key, value)
             );
         }
+
+        axiosSaveData(formData,'/api/save_document', (response) =>{
+            tblEdocs.value.dt.draw();
+            console.log(response);
+        });
+        return;
         await axios.post('/api/save_document', formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
@@ -351,7 +420,6 @@
             console.log(err);
         });
     }
-
     /**
      *  The use of rowSaveDocuments (plural) instead of rowSaveDocument (singular) is a best practice
      *  when handling multiple rows in a table or list,
