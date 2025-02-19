@@ -176,6 +176,10 @@
                 </div>
             </div>
         </template>
+        <template #footer>
+            <button type="button" class="btn btn-outline-success btn-sm"  @click="saveCoordinates"><li class="fas fa-save"></li></button>
+            <button type="button" id= "closeBtn" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>
+        </template>
     </ModalComponent>
     <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-folder" title="Document Approval" id="modalEdocsView">
         <template #body>
@@ -184,7 +188,7 @@
                     <a href=""></a>
                 </div>
                 <div class="col-12">
-                    <a class="btn btn-outline-primary" @click="btnViewEdocs(documentId)">View Document</a>
+                    <a class="btn btn-outline-primary" @click="btnViewEdocs(documentId)"><font-awesome-icon class="nav-icon" icon="fa-file" />&nbsp;View Document</a>
                     <div class="table-responsive">
                         <!-- :ajax="{
                                 url: tblApproverBaseUrl,
@@ -369,9 +373,7 @@
         rowSaveDocuments.value.splice(index,1);
     }
     const btnViewEdocs = (documentId) =>{
-        window.open(`${baseUrl}api/pdf/view?documentId=`, '_blank'); //boostrap.js
-        alert('sdasd',baseUrl)
-        return;
+        window.open(`${baseUrl}api/pdf/view?documentId=${documentId}`, '_blank'); //boostrap.js
     }
     /**
      * Array of formSaveDocument

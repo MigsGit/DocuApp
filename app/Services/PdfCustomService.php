@@ -3,14 +3,20 @@
 namespace App\Services;
 
 use Imagick;
-use setasign\Fpdi\Fpdi;
 use Exception;
+use setasign\Fpdi\Fpdi;
+use App\Models\Document;
+use App\Models\ApproverOrdinates;
+use App\Interfaces\ResourceInterface;
+use App\Interfaces\PdfCustomInterface;
 
-class PdfService
+class PdfCustomService implements PdfCustomInterface
 {
     protected $fpdi;
-    public function __construct(Fpdi $fpdi) {
+    protected $resource_interface;
+    public function __construct(Fpdi $fpdi,ResourceInterface $resource_interface) {
         $this->fpdi = $fpdi;
+        $this->resource_interface = $resource_interface;
     }
     /**
      * Get the total number of pages in a PDF file.
@@ -41,7 +47,7 @@ class PdfService
      * @throws \Exception If the conversion fails
      */
     public function convertPdfPageToImage(string $filePath, int $pageNumber, string $outputDir)
-    {
+    { //Passive Function
         if (!file_exists($filePath)) {
             throw new Exception('PDF file not found.');
         }
@@ -159,24 +165,34 @@ class PdfService
         }
         $this->fpdi->Output();
     }
-    public function insertMultipleImageAtCoordinates($pdfPath, $imagePath, $data)
+    /**
+     * insertMultipleImageAtCoordinates
+     * @param mixed $data
+     * @return void
+     */
+    public function insertMultipleImageAtCoordinates($data)
     {
+        //Get Approver Ordinates
+        $getDocumentWithApproverOrdinates =    $this->getDocumentWithApproverOrdinates($data);
+        $pdfPath = $getDocumentWithApproverOrdinates[0]->filtered_document_name;
+        $pdfPath = storage_path('app/public/edocs/'.$getDocumentWithApproverOrdinates[0]->id.'/'.$pdfPath);
+        $arrApproverOrdinates = $getDocumentWithApproverOrdinates[0]->approver_ordinates;
+
         // Import the existing PDF page
         $pageCount = $this->fpdi->setSourceFile($pdfPath);
 
         //Read all page using page count
         for ($i=1; $i <= $pageCount; $i++) {
+            // $currentPageNo = $i;
             $templateId = $this->fpdi->importPage($i);
             // Insert the image at specified coordinates
             $pdfDimensions = $this->fpdi->getTemplateSize($templateId);
+            $page_size 	= 'A4';
+            $orientation 	= 'P';
+            // Add a page to the PDF
+
             $w = $pdfDimensions['width'];
             $h = $pdfDimensions['height'];
-            //Calculate the position of the Signature Image
-            $x = $x * $w;
-            $y = $y * $h;
-
-            $orientation 	= 'P';
-            $page_size 	= 'A4';
             if($w > $h){
                 $orientation 	= 'L';
                 /* A4 size is width 210 x height 297 mm */
@@ -185,21 +201,35 @@ class PdfService
                     $page_size 			= 'A3';
                 }
             }
-
-            // Add a page to the PDF
             $this->fpdi->AddPage($orientation,$page_size);
             $this->fpdi->useTemplate($templateId);
 
-            // Add a image to the PDF
-            $this->fpdi->Image($imagePath, $x, $y, 22, 0);
-            $this->fpdi->SetFont('Arial', '', 5);
+            //User Define
+            foreach ($arrApproverOrdinates as $key => $valueApproverOrdinates) {
+                $currentOrdinates = explode(' | ',$valueApproverOrdinates->ordinates);
+                $arrPageNo = $valueApproverOrdinates->page_no;
 
-            // Generate a file path for the output PDF
-            // $outputPath = storage_path('app/public/modified_pdf.pdf');
+                if($arrPageNo == $i){
+                    $imagePath = storage_path('app/public/images/R152.png'); //TODO: get esignature based on emp_id save the path to the database also
+                    //Calculate the position of the Signature Image
+                    $x = $currentOrdinates[0] * $w;
+                    $y = $currentOrdinates[1] * $h;
+                    // Add a image to the PDF
+                    $this->fpdi->Image($imagePath, $x, $y-2, 22, 0);
+                }
+            }
         }
+        // View Output;
         $this->fpdi->Output();
     }
-    private function getApproverOrdinates(){
-
+    private function getDocumentWithApproverOrdinates($documentId){
+        $documentId = decrypt($documentId);
+        $relations = [
+            'approver_ordinates'
+        ];
+        $conditions = [
+            'id' => $documentId,
+        ];
+        return $ApproverOrdinates = $this->resource_interface->readOnlyRelationsAndConditions(Document::class,[],$relations,$conditions);
     }
 }

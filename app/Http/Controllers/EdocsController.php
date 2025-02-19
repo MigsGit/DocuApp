@@ -5,17 +5,19 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Document;
-use App\Models\ApproverOrdinates;
 use App\Services\PdfService;
 use Illuminate\Http\Request;
 use Yajra\DataTables\DataTables;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Cache;
-use App\Http\Requests\EdocsRequest;
-use App\Http\Resources\EdocsResource;
+use App\Models\ApproverOrdinates;
 use App\Interfaces\EdocsInterface;
+use Illuminate\Support\Facades\DB;
+use App\Http\Requests\EdocsRequest;
 use App\Interfaces\CommonInterface;
+use App\Http\Resources\EdocsResource;
 use App\Interfaces\ResourceInterface;
+use Illuminate\Support\Facades\Cache;
+use App\Interfaces\PdfCustomInterface;
+use Illuminate\Support\Facades\Storage;
 
 
 class EdocsController extends Controller
@@ -24,48 +26,65 @@ class EdocsController extends Controller
     protected $edocs_interface;
     protected $pdf_service;
     protected $common_interface;
+    protected $pdf_custom_interface;
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct(ResourceInterface $resource_interface,EdocsInterface $edocs_interface,PdfService $pdf_service,CommonInterface $common_interface) {
+    public function __construct(
+        ResourceInterface $resource_interface,EdocsInterface $edocs_interface,
+        PdfCustomInterface $pdf_custom_interface,CommonInterface $common_interface,
+        PdfService $pdf_service
+    ) {
         $this->resource_interface = $resource_interface;
         $this->edocs_interface = $edocs_interface;
         $this->pdf_service = $pdf_service;
+        $this->pdf_custom_interface = $pdf_custom_interface;
         $this->common_interface = $common_interface;
     }
 
-    /**
-      * Create
-     * @param $edocs_request
-     */
     public function saveDocument(EdocsRequest $edocs_request){
-
-        return $edocs_request->all();
-        $document_id = $edocs_request->document_id;
-        if( isset( $document_id ) ){
-            $fk_document = $this->resource_interface->update( Document::class,$document_id,$edocs_request->validated());
-        }else{
-            //TODO : DELETE THE APPROVER Coordinates
-            $save_document = $this->resource_interface->create( Document::class,$edocs_request->validated());
-            $document_id = $save_document->data_id;
-        }
-        foreach ($edocs_request->uuid as $key => $value) {
-            $request_validated = [
-                'fk_document'  => $document_id,
-                'uuid'  => $edocs_request->uuid[$key],
-                'approver_id' => $edocs_request->approver_name[$key],
-                'page_no' => $edocs_request->selected_page[$key],
-                'ordinates' => $edocs_request->ordinates[$key],
+        date_default_timezone_set('Asia/Manila');
+        DB::beginTransaction();
+        try {
+            $edocs_request->all();
+            $document_id = decrypt($edocs_request->document_id);
+            if( isset( $document_id ) ){
+                $fk_document = $this->resource_interface->update( Document::class,$document_id,$edocs_request->validated());
+            }else{
+                //TODO : DELETE THE APPROVER Coordinates
+                $save_document = $this->resource_interface->create( Document::class,$edocs_request->validated());
+                $document_id = $save_document->data_id;
+            }
+            $conditions = [
+                'fk_document' => $document_id
             ];
-            $this->resource_interface->create( ApproverOrdinates::class,$request_validated);
+            $getApproverOrdinates = $this->resource_interface->readOnlyRelationsAndConditions(ApproverOrdinates::class,[],[],$conditions);
+
+            if( count( $getApproverOrdinates ) != 0   ){
+                ApproverOrdinates::where('fk_document',$document_id)->delete();
+            }
+
+            foreach ($edocs_request->approver_name as $key => $value) {
+                $request_validated = [
+                    'fk_document'  => $document_id,
+                    'approver_id' => $edocs_request->approver_name[$key],
+                    'page_no' => $edocs_request->selected_page[$key],
+                    'ordinates' => $edocs_request->ordinates[$key],
+                ];
+                $this->resource_interface->create( ApproverOrdinates::class,$request_validated);
+            }
+            if($edocs_request->hasfile('document_file') ){
+                $arr_upload_file = $this->edocs_interface->uploadFile($edocs_request->document_file,$document_id);
+                $this->resource_interface->update( Document::class,$document_id,$arr_upload_file);
+            }
+            DB::commit();
+            return response()->json(['is_success' => 'true']);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
         }
-        if($edocs_request->hasfile('document_file') ){
-            $arr_upload_file = $this->edocs_interface->uploadFile($edocs_request->document_file,$document_id);
-            $this->resource_interface->update( Document::class,$document_id,$arr_upload_file);
-        }
-        return response()->json(['is_success' => 'true']);
     }
 
     public function loadEdocs(Request $request){
@@ -183,17 +202,18 @@ class EdocsController extends Controller
     public function convertPdfToImageByPageNumber(Request $request)
     {
         try {
+            $documentId = decrypt($request->document_id);
             $request->validate([
                 // 'pdf' => 'required|mimes:pdf|max:2048',
                 'select_page' => 'required|integer|min:1',
             ]);
 
-            $documents = Document::where('id',$request->document_id)->get();
+            $documents = Document::where('id',$documentId)->get();
             $pageNumber = $request->input('select_page');
             $filePath = storage_path('app/public/edocs/'.$documents[0]->id.'/'.$documents[0]->filtered_document_name);
             $outputDir = storage_path('app/public/images');
             // Convert PDF page to image
-            $imagePath = $this->pdf_service->convertPdfPageToImageTest($filePath, $pageNumber-1, $outputDir);
+            $imagePath = $this->pdf_service->convertPdfPageToImage($filePath, $pageNumber-1, $outputDir);
             return response()->json($imagePath);
         } catch (\Exception $e) {
             throw $e;
@@ -201,8 +221,7 @@ class EdocsController extends Controller
     }
 
     public function showPdfWithSignatures(Request $request){
-        return $documentId = decrypt($request->documentId);
-
+        return $this->pdf_custom_interface->insertMultipleImageAtCoordinates($request->documentId);
         /**
          * TODO: get image employee number to DB
          * TODO: get file path, ordinates and page DB
@@ -210,13 +229,10 @@ class EdocsController extends Controller
         $imagePath = storage_path('app/public/images/R152.png');
         // $filePath = storage_path('app/public/edocs/'.$documents[0]->id.'/'.$documents[0]->filtered_document_name);
         // $pdfPath = storage_path('app/public/edocs/1'.'/'.'0_updated_crud_ypics_as_of_september_2024.pdf');
-        $pdfPath = storage_path('app/public/edocs/6'.'/'.'0_0_soa_2024_0001_pricon_january_2024.pdf');
+        $pdfPath = storage_path('app/public/edocs/1'.'/'.'0_updated_crud_ypics_as_of_september_2024.pdf');
+        // $pdfPath = storage_path('app/public/edocs/6'.'/'.'0_0_soa_2024_0001_pricon_january_2024.pdf');
         // $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, $request->x, $request->y, 1);
         // $insert_image_at_coordinates = $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.4472630173564753', '0.563177771783113', 1);
         $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.711121157323689 ', '0.6189567684193703', 1);
     }
-
-
-
-
 }
