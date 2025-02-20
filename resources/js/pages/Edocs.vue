@@ -190,12 +190,6 @@
                 <div class="col-12">
                     <a class="btn btn-outline-primary" @click="btnViewEdocs(documentId)"><font-awesome-icon class="nav-icon" icon="fa-file" />&nbsp;View Document</a>
                     <div class="table-responsive">
-                        <!-- :ajax="{
-                                url: tblApproverBaseUrl,
-                                data: function (d) {
-                                    d.document_id = documentId; Pass dynamic parameter
-                                }
-                            }" -->
                         <DataTable
                             width="100%" cellspacing="0"
                             class="table table-bordered mt-2"
@@ -225,7 +219,49 @@
             </div>
         </template>
         <template #footer>
-            <button type="button" id= "closeBtn" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>
+            <button @click="edocsApproval('AP')" data-target="#saveModal" type="button" class="btn btn-outline-success btn-sm"><font-awesome-icon icon="fa-thumbs-up"/>&nbsp; Approved</button>
+            <!-- <button type="button" class="btn btn-outline-success btn-sm"><font-awesome-icon clas="fa fa-thumbs-up"/>&nbsp; Approved</button> -->
+            <button @click="edocsApproval('DIS')" type="button" class="btn btn-outline-danger btn-sm"> <font-awesome-icon icon="fa-thumbs-down"/>&nbsp; Disapproved</button>
+        </template>
+    </ModalComponent>
+    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-folder" title="Document Approval" id="modalEdocsApproval">
+        <template #body>
+            <div class="row mb-2">
+                <!-- <div class="col-12">
+                    <label class="sr-only" for="inlineFormInputGroup">Doc Id</label>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                        <div class="input-group-text">Doc Id</div>
+                        </div>
+                        <input v-model="formEdocsApproval.documentId" value="{{  }}" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Document Id" >
+                    </div>
+                </div> -->
+                <div class="col-12">
+                    <label class="sr-only" for="inlineFormInputGroup">Status</label>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                        <div class="input-group-text">Status</div>
+                        </div>
+                        <input v-model="formEdocsApproval.status" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Document Id" >
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label class="sr-only" for="inlineFormInputGroup">Remarks</label>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                        <div class="input-group-text">Remarks</div>
+                        </div>
+                        <textarea v-model="formEdocsApproval.remarks" row="10"></textarea>
+                    </div>
+                </div>
+                <div class="col-12">
+                </div>
+            </div>
+        </template>
+        <template #footer>
+            <button @click="edocsApproved" type="button" class="btn btn-outline-success btn-sm"><font-awesome-icon icon="fa-thumbs-up"/>&nbsp; Approved</button>
+            <!-- <button type="button" class="btn btn-outline-success btn-sm"><font-awesome-icon clas="fa fa-thumbs-up"/>&nbsp; Approved</button> -->
+            <button type="button" class="btn btn-outline-danger btn-sm"> <font-awesome-icon icon="fa-thumbs-down"/>&nbsp; Disapproved</button>
         </template>
     </ModalComponent>
     <!--
@@ -261,8 +297,6 @@
     const {
         axiosSaveData
     } = useForm();
-
-
     //Ref State
     const tblEdocsBaseUrl = ref(null);
     const tblApproverBaseUrl = ref(null);
@@ -273,7 +307,7 @@
     const showBtnFirstRow = ref(false);
     const showBtnSecondRow = ref(true);
     const showBtnSave = ref(false);
-    // rowSaveDocument.spanOrdinates
+    // URL
     tblEdocsBaseUrl.value = baseUrl+"api/load_edocs";
     tblApproverBaseUrl.value = baseUrl+"api/load_approver_by_doc_id";
 
@@ -312,7 +346,7 @@
     const columnApprovers =[
         { data: 'get_num'},
         { data: 'get_status'},
-        { data: 'approver_id'},
+        { data: 'get_approver_name'},
         { data: 'page_no'},
         { data: 'approver_remarks'},
     ];
@@ -374,6 +408,15 @@
     }
     const btnViewEdocs = (documentId) =>{
         window.open(`${baseUrl}api/pdf/view?documentId=${documentId}`, '_blank'); //boostrap.js
+    }
+    const edocsApproval = (status) => {
+
+        // let params = {
+        //     'status' : status
+        // };
+        // axiosFetchData(params,'update_edocs_approval_status',function(response){
+        //     console.log(response);
+        // });
     }
     /**
      * Array of formSaveDocument

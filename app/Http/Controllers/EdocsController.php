@@ -115,7 +115,7 @@ class EdocsController extends Controller
             $document_id = ( isset($request->document_id) ) ? decrypt($request->document_id) : 0;
             $data = '';
             $relations = [
-
+                'user'
             ];
             $conditions = [
 
@@ -124,17 +124,49 @@ class EdocsController extends Controller
             ];
             $read_document_by_id = $this->resource_interface->readOnlyRelationsAndConditions(ApproverOrdinates::class,$data,$relations,$conditions);
             return DataTables::of($read_document_by_id)
-            ->addColumn('get_num',function($row){
+            // ->addIndexColumn() // This automatically adds a "DT_RowIndex"
+            // ->addColumn('get_num',function($row){
+            //      return $row->DT_RowIndex; // Return the row number
+            // })
+            ->addColumn('get_num', function ($row) use (&$count) {//& Increments and keeps track across all rows
                 $result = '';
-                $result .= '1';
-                return $result;
+                return $result .= ++$count;
             })
             ->addColumn('get_status',function($row){
                 $result = '';
-                $result .= 'hello';
+                switch ($row->status) {
+                    case 'PE':
+                        # code...
+                        $bg_color = 'bg-warning';
+                        $status = 'PENDING';
+                        break;
+                    case 'AP':
+                        # code...
+                        $bg_color = 'bg-success';
+                        $status = 'APPROVED';
+                        break;
+                    case 'DISAPPROVED':
+                        # code...
+                        $bg_color = 'bg-danger';
+                        $status = 'APPROVED';
+                        break;
+                    case 'CAN':
+                        # code...
+                        $bg_color = 'bg-danger';
+                        $status = 'CANCELLED';
+                        break;
+                    default:
+                        # code...
+                        break;
+                }
+                $result .='<span class="badge '.$bg_color.'"> '.$status.' </span>';
                 return $result;
             })
-            ->rawColumns(['get_num','get_status'])
+            ->addColumn('get_approver_name', function ($row) {
+                $result = '';
+                return $result .= $row['user']->name;
+            })
+            ->rawColumns(['get_num','get_status','get_approver_name'])
             ->make(true);
         } catch (Exception $e) {
             return response()->json(['is_success' => 'false', 'exceptionError' => e->getMessage()]);
@@ -234,5 +266,16 @@ class EdocsController extends Controller
         // $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, $request->x, $request->y, 1);
         // $insert_image_at_coordinates = $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.4472630173564753', '0.563177771783113', 1);
         $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.711121157323689 ', '0.6189567684193703', 1);
+    }
+
+    public function updateEdocsApprovalStatus(Request $request){
+        return 'true' ;
+        $this->resource_interface->update()
+
+        try {
+            return response()->json(['is_success' => 'true']);
+        } catch (Exception $e) {
+            return response()->json(['is_success' => 'false', 'exceptionError' => $e->getMessage()]);
+        }
     }
 }

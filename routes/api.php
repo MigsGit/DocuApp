@@ -26,6 +26,8 @@ Route::controller(EdocsController::class)->group(function () {
     Route::get('read_document_by_id', 'readDocumentById')->name('read_document_by_id');
     Route::get('read_approver_name_by_id', 'readApproverNameById')->name('read_approver_name_by_id');
     Route::get('read_approver_name', 'readApproverName')->name('read_approver_name');
+    Route::get('update_edocs_approval_status', 'updateEdocsApprovalStatus')->name('update_edocs_approval_status');
+
     Route::get('convert_pdf_to_image_by_page_number', 'convertPdfToImageByPageNumber')->name('convert_pdf_to_image_by_page_number');
     Route::get('pdf/view', 'showPdfWithSignatures')->name('/pdf/view');
     Route::get('get_document_Info_for_email', 'getDocumentInfoForEmail')->name('get_document_Info_for_email');
