@@ -173,7 +173,7 @@ class EdocsController extends Controller
             $page_count = $this->pdf_service->getPageCount(storage_path('app/' . 'public/edocs/'. $document_id .'/'. $read_document_by_id[0]->filtered_document_name));
 
             return response()->json(['is_success' => 'true', 'read_document_by_id' => $read_document_by_id , 'page_count' => $page_count]);
-        } catch (\Throwable $th) {
+        } catch (\Exception $th) {
             throw $th;
         }
     }

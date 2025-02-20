@@ -35,7 +35,6 @@ window.Modal = Modal;
 window.Toast = useToast;
 window.Swal = Swal;
 window.Chart = Chart;
-
 try {
     window.$ = $;
 } catch (e) {
