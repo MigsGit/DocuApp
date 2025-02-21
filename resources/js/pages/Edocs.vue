@@ -190,12 +190,6 @@
                 <div class="col-12">
                     <a class="btn btn-outline-primary" @click="btnViewEdocs(documentId)"><font-awesome-icon class="nav-icon" icon="fa-file" />&nbsp;View Document</a>
                     <div class="table-responsive">
-                        <!-- :ajax="{
-                                url: tblApproverBaseUrl,
-                                data: function (d) {
-                                    d.document_id = documentId; Pass dynamic parameter
-                                }
-                            }" -->
                         <DataTable
                             width="100%" cellspacing="0"
                             class="table table-bordered mt-2"
@@ -225,6 +219,46 @@
             </div>
         </template>
         <template #footer>
+            <button @click="edocsApproval('AP')" type="button" class="btn btn-outline-success btn-sm"><font-awesome-icon icon="fa-thumbs-up"/>&nbsp; Approved</button>
+            <!-- <button type="button" class="btn btn-outline-success btn-sm"><font-awesome-icon clas="fa fa-thumbs-up"/>&nbsp; Approved</button> -->
+            <button @click="edocsApproval('DIS')" type="button" class="btn btn-outline-danger btn-sm"> <font-awesome-icon icon="fa-thumbs-down"/>&nbsp; Disapproved</button>
+        </template>
+    </ModalComponent>
+    <ModalComponent @add-event="saveEdocsApproval" modalDialog="modal-dialog modal-md" icon="fa-thumbs-up" title="Approval Details" id="modalEdocsApproval">
+        <template #body>
+            <div class="row mb-2">
+                <!-- <div class="col-12">
+                    <label class="sr-only" for="inlineFormInputGroup">Doc Id</label>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                        <div class="input-group-text">Doc Id</div>
+                        </div>
+                        <input v-model="formEdocsApproval.documentId" value="{{  }}" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Document Id" >
+                    </div>
+                </div> -->
+                <div class="col-12">
+                    <label class="sr-only" for="form_edocs_approval_status">Status</label>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                        <div class="input-group-text">Status</div>
+                        </div>
+                        <input v-model="formEdocsApproval.status" type="text" class="form-control" id="form_edocs_approval_status" placeholder="status" >
+                    </div>
+                </div>
+                <div class="col-12">
+                    <label class="sr-only" for="form_edocs_approval_remarks">Remarks</label>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                        <div class="input-group-text">Remarks</div>
+                        </div>
+                        <textarea v-model="formEdocsApproval.remarks" type="text" class="form-control" id="form_edocs_approval_remarks">
+                        </textarea>
+                    </div>
+                </div>
+            </div>
+        </template>
+        <template #footer>
+            <button type="submit" class="btn btn-outline-success btn-sm"><li class="fas fa-save"></li></button>
             <button type="button" id= "closeBtn" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>
         </template>
     </ModalComponent>
@@ -261,8 +295,6 @@
     const {
         axiosSaveData
     } = useForm();
-
-
     //Ref State
     const tblEdocsBaseUrl = ref(null);
     const tblApproverBaseUrl = ref(null);
@@ -273,7 +305,14 @@
     const showBtnFirstRow = ref(false);
     const showBtnSecondRow = ref(true);
     const showBtnSave = ref(false);
-    // rowSaveDocument.spanOrdinates
+    //Reactive
+    const formEdocsApproval = reactive({
+        documentId : '',
+        status : '',
+        remarks : '',
+    });
+
+    // URL
     tblEdocsBaseUrl.value = baseUrl+"api/load_edocs";
     tblApproverBaseUrl.value = baseUrl+"api/load_approver_by_doc_id";
 
@@ -312,7 +351,7 @@
     const columnApprovers =[
         { data: 'get_num'},
         { data: 'get_status'},
-        { data: 'approver_id'},
+        { data: 'get_approver_name'},
         { data: 'page_no'},
         { data: 'approver_remarks'},
     ];
@@ -322,6 +361,8 @@
         objModalSaveDocument.value = new Modal(document.querySelector("#modalCreateDocument"),{});
         objModalOpenPdfImage.value = new Modal(document.querySelector("#modalOpenPdfImage"),{});
         modalEdocs.View = new Modal(document.querySelector("#modalEdocsView"),{});
+        modalEdocs.View = new Modal(document.querySelector("#modalEdocsView"),{});
+        modalEdocs.Approval = new Modal(document.querySelector("#modalEdocsApproval"),{});
 
         $('#modalCreateDocument').on('hidden.bs.modal', function (e) {
             documentFile.value.value = "";
@@ -375,6 +416,19 @@
     const btnViewEdocs = (documentId) =>{
         window.open(`${baseUrl}api/pdf/view?documentId=${documentId}`, '_blank'); //boostrap.js
     }
+    const edocsApproval = (status) => {
+        formEdocsApproval.documentId = documentId.value;
+        formEdocsApproval.status =  status;
+        console.log('formEdocsApproval.documentId',formEdocsApproval.documentId);
+
+        modalEdocs.Approval.show();
+        // let params = {
+        //     'status' : status
+        // };
+        // axiosFetchData(params,'update_edocs_approval_status',function(response){
+        //     console.log(response);
+        // });
+    }
     /**
      * Array of formSaveDocument
      * Nested Loop for Array of rowSaveDocuments
@@ -418,6 +472,17 @@
             tblEdocs.value.dt.draw();
         }).catch((err) => {
             console.log(err);
+        });
+    }
+    const saveEdocsApproval = async () => {
+
+        let formData = new FormData();
+            formData.append("document_id", formEdocsApproval.documentId);
+            formData.append("status", formEdocsApproval.status);
+            formData.append("remarks", formEdocsApproval.remarks);
+        axiosSaveData(formData,'/api/update_edocs_approval_status', (response) =>{
+            modalEdocs.Approval.hide();
+            tblApproverByDocId.value.dt.ajax.url( `${tblApproverBaseUrl.value}?document_id=${documentId.value}` ).draw();
         });
     }
     /**
