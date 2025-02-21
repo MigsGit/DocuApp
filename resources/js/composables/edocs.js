@@ -7,7 +7,8 @@ export default function edocs()
     const objModalOpenPdfImage = ref(null);
     const objModalLoading = ref(null);
     const modalEdocs = reactive({
-        View : ""
+        View : "",
+        Approval : ""
     })
     const tblApproverByDocId = ref(null)
     const showBox = ref(false);
@@ -70,8 +71,7 @@ export default function edocs()
         showBox.value = true;
         edocsVar.pxCoordinate	= boxX.value / width.value;
         edocsVar.pyCoordinate	= boxY.value / height.value;
-
-      };
+    };
 
       /**
       * Getting of current value of select option inside the v-for

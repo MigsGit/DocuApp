@@ -219,12 +219,12 @@
             </div>
         </template>
         <template #footer>
-            <button @click="edocsApproval('AP')" data-target="#saveModal" type="button" class="btn btn-outline-success btn-sm"><font-awesome-icon icon="fa-thumbs-up"/>&nbsp; Approved</button>
+            <button @click="edocsApproval('AP')" type="button" class="btn btn-outline-success btn-sm"><font-awesome-icon icon="fa-thumbs-up"/>&nbsp; Approved</button>
             <!-- <button type="button" class="btn btn-outline-success btn-sm"><font-awesome-icon clas="fa fa-thumbs-up"/>&nbsp; Approved</button> -->
             <button @click="edocsApproval('DIS')" type="button" class="btn btn-outline-danger btn-sm"> <font-awesome-icon icon="fa-thumbs-down"/>&nbsp; Disapproved</button>
         </template>
     </ModalComponent>
-    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-folder" title="Document Approval" id="modalEdocsApproval">
+    <ModalComponent @add-event="saveEdocsApproval" modalDialog="modal-dialog modal-md" icon="fa-thumbs-up" title="Approval Details" id="modalEdocsApproval">
         <template #body>
             <div class="row mb-2">
                 <!-- <div class="col-12">
@@ -237,31 +237,29 @@
                     </div>
                 </div> -->
                 <div class="col-12">
-                    <label class="sr-only" for="inlineFormInputGroup">Status</label>
+                    <label class="sr-only" for="form_edocs_approval_status">Status</label>
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
                         <div class="input-group-text">Status</div>
                         </div>
-                        <input v-model="formEdocsApproval.status" type="text" class="form-control" id="inlineFormInputGroup" placeholder="Document Id" >
+                        <input v-model="formEdocsApproval.status" type="text" class="form-control" id="form_edocs_approval_status" placeholder="status" >
                     </div>
                 </div>
                 <div class="col-12">
-                    <label class="sr-only" for="inlineFormInputGroup">Remarks</label>
+                    <label class="sr-only" for="form_edocs_approval_remarks">Remarks</label>
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
                         <div class="input-group-text">Remarks</div>
                         </div>
-                        <textarea v-model="formEdocsApproval.remarks" row="10"></textarea>
+                        <textarea v-model="formEdocsApproval.remarks" type="text" class="form-control" id="form_edocs_approval_remarks">
+                        </textarea>
                     </div>
-                </div>
-                <div class="col-12">
                 </div>
             </div>
         </template>
         <template #footer>
-            <button @click="edocsApproved" type="button" class="btn btn-outline-success btn-sm"><font-awesome-icon icon="fa-thumbs-up"/>&nbsp; Approved</button>
-            <!-- <button type="button" class="btn btn-outline-success btn-sm"><font-awesome-icon clas="fa fa-thumbs-up"/>&nbsp; Approved</button> -->
-            <button type="button" class="btn btn-outline-danger btn-sm"> <font-awesome-icon icon="fa-thumbs-down"/>&nbsp; Disapproved</button>
+            <button type="submit" class="btn btn-outline-success btn-sm"><li class="fas fa-save"></li></button>
+            <button type="button" id= "closeBtn" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>
         </template>
     </ModalComponent>
     <!--
@@ -307,6 +305,13 @@
     const showBtnFirstRow = ref(false);
     const showBtnSecondRow = ref(true);
     const showBtnSave = ref(false);
+    //Reactive
+    const formEdocsApproval = reactive({
+        documentId : '',
+        status : '',
+        remarks : '',
+    });
+
     // URL
     tblEdocsBaseUrl.value = baseUrl+"api/load_edocs";
     tblApproverBaseUrl.value = baseUrl+"api/load_approver_by_doc_id";
@@ -356,6 +361,8 @@
         objModalSaveDocument.value = new Modal(document.querySelector("#modalCreateDocument"),{});
         objModalOpenPdfImage.value = new Modal(document.querySelector("#modalOpenPdfImage"),{});
         modalEdocs.View = new Modal(document.querySelector("#modalEdocsView"),{});
+        modalEdocs.View = new Modal(document.querySelector("#modalEdocsView"),{});
+        modalEdocs.Approval = new Modal(document.querySelector("#modalEdocsApproval"),{});
 
         $('#modalCreateDocument').on('hidden.bs.modal', function (e) {
             documentFile.value.value = "";
@@ -410,7 +417,11 @@
         window.open(`${baseUrl}api/pdf/view?documentId=${documentId}`, '_blank'); //boostrap.js
     }
     const edocsApproval = (status) => {
+        formEdocsApproval.documentId = documentId.value;
+        formEdocsApproval.status =  status;
+        console.log('formEdocsApproval.documentId',formEdocsApproval.documentId);
 
+        modalEdocs.Approval.show();
         // let params = {
         //     'status' : status
         // };
@@ -461,6 +472,17 @@
             tblEdocs.value.dt.draw();
         }).catch((err) => {
             console.log(err);
+        });
+    }
+    const saveEdocsApproval = async () => {
+
+        let formData = new FormData();
+            formData.append("document_id", formEdocsApproval.documentId);
+            formData.append("status", formEdocsApproval.status);
+            formData.append("remarks", formEdocsApproval.remarks);
+        axiosSaveData(formData,'/api/update_edocs_approval_status', (response) =>{
+            modalEdocs.Approval.hide();
+            tblApproverByDocId.value.dt.ajax.url( `${tblApproverBaseUrl.value}?document_id=${documentId.value}` ).draw();
         });
     }
     /**

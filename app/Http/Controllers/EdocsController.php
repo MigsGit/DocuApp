@@ -45,6 +45,7 @@ class EdocsController extends Controller
     }
 
     public function saveDocument(EdocsRequest $edocs_request){
+
         date_default_timezone_set('Asia/Manila');
         DB::beginTransaction();
         try {
@@ -137,22 +138,22 @@ class EdocsController extends Controller
                 switch ($row->status) {
                     case 'PE':
                         # code...
-                        $bg_color = 'bg-warning';
+                        $bg_color = 'bg-warning text-white';
                         $status = 'PENDING';
                         break;
                     case 'AP':
                         # code...
-                        $bg_color = 'bg-success';
+                        $bg_color = 'bg-success text-white';
                         $status = 'APPROVED';
                         break;
-                    case 'DISAPPROVED':
+                    case 'DIS':
                         # code...
-                        $bg_color = 'bg-danger';
-                        $status = 'APPROVED';
+                        $bg_color = 'bg-danger text-white';
+                        $status = 'DISAPPROVED';
                         break;
                     case 'CAN':
                         # code...
-                        $bg_color = 'bg-danger';
+                        $bg_color = 'bg-danger text-white';
                         $status = 'CANCELLED';
                         break;
                     default:
@@ -269,9 +270,15 @@ class EdocsController extends Controller
     }
 
     public function updateEdocsApprovalStatus(Request $request){
-        return 'true' ;
-        $this->resource_interface->update()
-
+        $data = [
+            'status' => $request->status,
+            'approver_remarks' => $request->remarks,
+        ];
+        $conditions = [
+            'fk_document' => decrypt($request->document_id),
+            'approver_id' => 1,
+        ];
+        $this->resource_interface->updateWithConditions(ApproverOrdinates::class,$data,$conditions);
         try {
             return response()->json(['is_success' => 'true']);
         } catch (Exception $e) {

@@ -26,7 +26,7 @@ Route::controller(EdocsController::class)->group(function () {
     Route::get('read_document_by_id', 'readDocumentById')->name('read_document_by_id');
     Route::get('read_approver_name_by_id', 'readApproverNameById')->name('read_approver_name_by_id');
     Route::get('read_approver_name', 'readApproverName')->name('read_approver_name');
-    Route::get('update_edocs_approval_status', 'updateEdocsApprovalStatus')->name('update_edocs_approval_status');
+    // Route::get('update_edocs_approval_status', 'updateEdocsApprovalStatus')->name('update_edocs_approval_status');
 
     Route::get('convert_pdf_to_image_by_page_number', 'convertPdfToImageByPageNumber')->name('convert_pdf_to_image_by_page_number');
     Route::get('pdf/view', 'showPdfWithSignatures')->name('/pdf/view');
@@ -34,6 +34,7 @@ Route::controller(EdocsController::class)->group(function () {
     Route::get('encrypt_decrypt_variable', 'encryptDecryptVariable')->name('encrypt_decrypt_variable');
 
     Route::post('save_document', 'saveDocument')->name('save_document');
+    Route::post('update_edocs_approval_status', 'updateEdocsApprovalStatus')->name('update_edocs_approval_status');
 });
 
 Route::controller(SettingsController::class)->group(function () {
