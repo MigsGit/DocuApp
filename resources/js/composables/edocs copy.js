@@ -3,12 +3,12 @@ import {v4 as uuid4} from 'uuid';
 import useFetch from './utils/useFetch';
 export default function edocs()
 {
+    const objModalOpenPdfImage = ref(null);
     const objModalLoading = ref(null);
     const modalEdocs = {
         View : "",
         Approval : "",
-        SaveDocument : "",
-        OpenPdfImage : "",
+        objModalSaveDocument : ""
     }
     const tblApproverByDocId = ref(null)
     const showBox = ref(false);
@@ -92,12 +92,12 @@ export default function edocs()
         }
         await axiosFetchData(params, `${baseUrl}api/convert_pdf_to_image_by_page_number`, (response) => {
             let data = response.data;
-            modalEdocs.OpenPdfImage.show();
+            objModalOpenPdfImage.value.show();
             // objModalLoading.value.hide();
             imageSrc.value = data.image;
             width.value = data.width;
             height.value = data.height;
-        },modalEdocs.OpenPdfImage);
+        },objModalOpenPdfImage.value);
     }
 
     const readDocumentById = async (documentId)  => {
@@ -129,7 +129,7 @@ export default function edocs()
             for (let index = 0; index < documentDetails.page_count; index++) {
                 edocsVar.optSelectPages.push(index+1)
             }
-        },modalEdocs.SaveDocument);
+        },modalEdocs.objModalSaveDocument);
     }
 
     const readApproverNameById  = async (approverId)  => {
@@ -161,6 +161,7 @@ export default function edocs()
         readDocumentById,
         readApproverNameById,
         edocsVar,
+        objModalOpenPdfImage,
         objModalLoading,
         modalEdocs,
         boxX,

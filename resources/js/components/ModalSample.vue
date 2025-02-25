@@ -62,16 +62,7 @@
 
   <script setup>
     import { onMounted, ref, reactive, watch,nextTick } from "vue";
-    const test = ref(null);
-    onMounted( () => {
-        //modalOpenPdfImage
-        test.value = new Modal(document.querySelector("#testing"),{});
-        let btnEdocs = document.querySelector("#btnTest")
-            btnEdocs.addEventListener('click', function(event){
-                // console.log('dasdsa');
-                test.value.show();
-            })
-    });
+
     // Reactive state
     const showFirstRow = ref(true); // First row visibility
     const showSecondRow = ref(false); // Second row visibility

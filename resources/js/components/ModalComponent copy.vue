@@ -1,6 +1,6 @@
 <template>
     <!-- <div class="modal fade" ref="modalSave" id="modalSave" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true"> -->
-        <div class="modal fade" ref="modalRef" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal fade" :ref="ref" :id="id" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <!-- <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document"> -->
         <div :class="modalDialog" role="document">
             <div class="modal-content">
@@ -38,19 +38,15 @@
             type: String,
             default: '',
         },
+        id: {
+            type: String,
+            required: true,
+        },
+        ref: {
+            type: String,
+            required: true,
+        },
     })
-    const modalRef = ref(null);
-    let modalInstance = null;
-
-    onMounted(() => {
-        modalInstance = new Modal(modalRef.value);
-    });
-
-    const showModal = () => modalInstance?.show();
-    const hideModal = () => modalInstance?.hide();
-
-    // Expose modal functions and ref to the parent
-    defineExpose({ showModal, hideModal, modalRef });
 </script>
 
 <style>

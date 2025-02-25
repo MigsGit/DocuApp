@@ -14,7 +14,7 @@ toastr.open({
 // console.log(toastr.open)
 export default function useFetch ()
 {
-    const axiosFetchData = async  (params, apiUrl,responseCallback) => {
+    const axiosFetchData = async  (params, apiUrl,responseCallback,modalEl=null) => {
         if (!apiUrl) {
             console.error("🚨 Error: API URL is null or undefined!");
             return;
@@ -34,9 +34,11 @@ export default function useFetch ()
 
             }
         } catch (err) {
+            modalEl.hide();
+            console.log(modalEl);
             Swal.fire({
-                title: "System Alert !",
-                text: "Please check your inputs !",
+                title: "Please check your inputs !",
+                text: "System Alert! ",
                 icon: "error",
                 timer: 1000,
                 showConfirmButton: false

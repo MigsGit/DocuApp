@@ -157,7 +157,8 @@ class EdocsController extends Controller
                         $status = 'CANCELLED';
                         break;
                     default:
-                        # code...
+                        $bg_color = 'bg-secondary text-white';
+                        $status = 'Unknown Status';
                         break;
                 }
                 $result .='<span class="badge '.$bg_color.'"> '.$status.' </span>';

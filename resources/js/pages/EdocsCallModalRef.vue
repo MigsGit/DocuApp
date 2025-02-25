@@ -38,11 +38,13 @@
             </div>
         </div>
     </div>
-    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="Docu-App" ref="modalSaveEdocs" @add-event="saveDocument">
+    <!-- <ModalComponent modalDialog="modal-dialog modal-md modal-dialog-scrollable" icon="fa-user" title="Module" id="modalCreateDocument" @add-event="saveDocument"> -->
+    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-user" title="Module" id="modalCreateDocument" ref="modalCreateEdocs" @add-event="saveDocument">
         <template #body>
             <div class="align-items-center">
-                <!-- Row 1 -->
-                <div v-show="showFirstRow" class="row mb-2 animate__animated animate__slideInLeft">
+                    <!-- Row 1 -->
+                <!-- <div v-show="showFirstRow" class="row mb-2 animate__animated animate__slideInLeft"> -->
+                <div v-show="showFirstRow" class="row mb-2">
                     <div class="col-12">
                         <label class="sr-only" for="inlineFormInputGroup">Document Id</label>
                         <div class="input-group mb-2">
@@ -80,7 +82,8 @@
                     </div>
                 </div>
             <!-- Row 2 -->
-                <div v-show="showSecondRow" class="row animate__animated animate__slideInRight">
+                <!-- <div v-show="showSecondRow" class="row animate__animated animate__slideInRight"> -->
+                <div v-show="showSecondRow" class="row">
                     <div class="col-12">
                         <button @click="addRowSaveDocuments"type="button" class="btn btn-primary" style="float: right !important;"><i class="fas fa-plus"></i> Add</button>
                         <br><br>
@@ -152,7 +155,7 @@
             </button>
         </template>
     </ModalComponent> <!-- @add-event="" -->
-    <ModalComponent ref="modalOpenPdfImage" modalDialog="modal-dialog modal-xl" icon="fa-user" title="PDF Document">
+    <ModalComponent modalDialog="modal-dialog modal-xl" icon="fa-user" title="PDF Document" id="modalOpenPdfImage">
         <template #body>
             <div class="form-row align-items-center">
                 <div class="col-12">
@@ -180,7 +183,7 @@
             <button type="button" id= "closeBtn" class="btn btn-outline-secondary btn-sm" data-dismiss="modal">Close</button>
         </template>
     </ModalComponent>
-    <ModalComponent ref="modalEdocsView" modalDialog="modal-dialog modal-lg" icon="fa-folder" title="Document Approval" >
+    <ModalComponent modalDialog="modal-dialog modal-lg" icon="fa-folder" title="Document Approval" id="modalEdocsView">
         <template #body>
             <div class="row mb-2">
                 <div class="col-12">
@@ -223,7 +226,7 @@
             <button @click="edocsApproval('DIS')" type="button" class="btn btn-outline-danger btn-sm"> <font-awesome-icon icon="fa-thumbs-down"/>&nbsp; Disapproved</button>
         </template>
     </ModalComponent>
-    <ModalComponent  ref="modalEdocsApproval" @add-event="saveEdocsApproval" modalDialog="modal-dialog modal-md" icon="fa-thumbs-up" title="Approval Details">
+    <ModalComponent @add-event="saveEdocsApproval" modalDialog="modal-dialog modal-md" icon="fa-thumbs-up" title="Approval Details" id="modalEdocsApproval">
         <template #body>
             <div class="row mb-2">
                 <!-- <div class="col-12">
@@ -266,6 +269,25 @@
      -->
     <LoadingComponent :isModalVisible="isModalLoadingComponent" loadingMsg="Loading, please wait !" id="modalLoading">
     </LoadingComponent>^
+
+    <div class="modal fade" id="ModalTicket" tabindex="-1" aria-labelledby="ModalTicketLabel" aria-hidden="true" ref="modalTicket">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title"><i class="fa-brands fa-d-and-d"></i> dsadsd </h4>
+                        <button type="button" class="btn-close" id="closebtn" data-item-process="create" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                        <div class="modal-body" >
+                            fdsdfsffdsf
+                        </div>
+                        <div class="modal-footer justify-content-between">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <!-- <button type="submit" class="btn btn-primary" v-show="modalViewDatas.buttonFunction == 'update'" >Save changes</button> -->
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                </div>
+            </div>
+        </div>
 </template>
 
 <script setup>
@@ -294,13 +316,9 @@
     const {
         axiosSaveData
     } = useForm();
-
-    //Modal Ref State
-    const modalSaveEdocs = ref();
-    const modalOpenPdfImage = ref();
-    const modalEdocsApproval = ref();
-    const modalEdocsView = ref();
     //Ref State
+    const modalCreateEdocs = ref();
+    const modalTicket = ref();
     const tblEdocsBaseUrl = ref(null);
     const tblApproverBaseUrl = ref(null);
     const documentId = ref(null);
@@ -335,7 +353,7 @@
                         formSaveDocument.value.documentId = documentId;
                         readDocumentById(documentId);
                         readApproverNameById(documentId);
-                        modalEdocs.saveDocument.show();
+                        modalEdocs.objModalSaveDocument.show();
                         // modalEdocs.objModalSaveDocument.hide();
                         // console.log(modalEdocs.objModalSaveDocument);
 
@@ -367,11 +385,14 @@
 
     onMounted( () => {
         // modalEdocs.objModalSaveDocument = new Modal(document.querySelector("#modalCreateDocument"),{});
-        modalEdocs.saveDocument = new Modal(modalSaveEdocs.value.modalRef,{ keyboard: false });
-        modalEdocs.OpenPdfImage = new Modal(modalOpenPdfImage.value.modalRef,{ keyboard: false });
-        modalEdocs.Approval = new Modal(modalEdocsApproval.value.modalRef,{ keyboard: false });
-        modalEdocs.View = new Modal(modalEdocsView.value.modalRef,{ keyboard: false });
-        modalEdocs.Approval.show()
+        modalEdocs.objModalSaveDocument = new Modal(modalCreateEdocs.value.modalRef,{ keyboard: false });
+        modalEdocs.objModalSaveDocument.show();
+        objModalOpenPdfImage.value = new Modal(document.querySelector("#modalOpenPdfImage"),{});
+        modalEdocs.Approval = new Modal(document.querySelector("#modalEdocsApproval"),{});
+        modalEdocs.View = new Modal(document.querySelector("#modalEdocsView"),{});
+        // modalEdocs.View.show()
+        // modalEdocs.View.hide()
+
         $('#modalCreateDocument').on('hidden.bs.modal', function (e) {
             documentFile.value.value = "";
             rowSaveDocuments.value = [
@@ -412,10 +433,14 @@
         showBtnSecondRow.value = false;
         showBtnFirstRow.value = true;
         showBtnSave.value = true;
+        // modalCreateEdocs.value.hideModal();
+        modalEdocs.objModalSaveDocument.hide();
 
       }
     }
+    const show = async () =>{
 
+    }
     const addRowSaveDocuments = async () =>{
         rowSaveDocuments.value.push({   uuid: uuid4(), selectPage: 'N/A' ,approverName: '', ordinates: '' })
     }
@@ -426,9 +451,23 @@
         window.open(`${baseUrl}api/pdf/view?documentId=${documentId}`, '_blank'); //boostrap.js
     }
     const edocsApproval = (status) => {
+        console.log(status);
+        if(status == "AP"){
+            modalEdocs.Approval.show();
+        }else{
+            modalCreateEdocs.value.hideModal();
+            console.log(modalEdocs.objModalSaveDocument);
+        }
+        return;
         formEdocsApproval.documentId = documentId.value;
         formEdocsApproval.status =  status;
-        modalEdocs.Approval.show()
+        console.log('formEdocsApproval.documentId',formEdocsApproval.documentId);
+        // let params = {
+        //     'status' : status
+        // };
+        // axiosFetchData(params,'update_edocs_approval_status',function(response){
+        //     console.log(response);
+        // });
     }
     /**
      * Array of formSaveDocument
@@ -476,14 +515,15 @@
         });
     }
     const saveEdocsApproval = async () => {
+
         let formData = new FormData();
             formData.append("document_id", formEdocsApproval.documentId);
             formData.append("status", formEdocsApproval.status);
             formData.append("remarks", formEdocsApproval.remarks);
-            axiosSaveData(formData,'/api/update_edocs_approval_status', (response) =>{
-                modalEdocs.Approval.hide();
-                tblApproverByDocId.value.dt.ajax.url( `${tblApproverBaseUrl.value}?document_id=${documentId.value}` ).draw();
-            });
+        axiosSaveData(formData,'/api/update_edocs_approval_status', (response) =>{
+            modalEdocs.Approval.hide();
+            tblApproverByDocId.value.dt.ajax.url( `${tblApproverBaseUrl.value}?document_id=${documentId.value}` ).draw();
+        });
     }
     /**
      *  The use of rowSaveDocuments (plural) instead of rowSaveDocument (singular) is a best practice
@@ -493,7 +533,7 @@
     const saveCoordinates = () =>{
         rowSaveDocuments.value[edocsVar.rowSaveDocumentId].ordinates = `${edocsVar.pxCoordinate} | ${edocsVar.pyCoordinate}`;
         rowSaveDocuments.value[edocsVar.rowSaveDocumentId].selectedPage = edocsVar.selectedPage;
-        modalEdocs.OpenPdfImage.hide();
+        objModalOpenPdfImage.value.hide();
         console.log(rowSaveDocuments);
 
     }
