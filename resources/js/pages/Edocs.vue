@@ -371,7 +371,8 @@
         modalEdocs.OpenPdfImage = new Modal(modalOpenPdfImage.value.modalRef,{ keyboard: false });
         modalEdocs.Approval = new Modal(modalEdocsApproval.value.modalRef,{ keyboard: false });
         modalEdocs.View = new Modal(modalEdocsView.value.modalRef,{ keyboard: false });
-        modalEdocs.Approval.show()
+        // modalEdocsApproval.value.showModal()
+        // modalEdocsApproval.value.hideModal()
         $('#modalCreateDocument').on('hidden.bs.modal', function (e) {
             documentFile.value.value = "";
             rowSaveDocuments.value = [

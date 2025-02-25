@@ -25,6 +25,7 @@
 
 <script setup>
     import {defineProps,ref,onMounted,computed } from 'vue'
+
     const props = defineProps({
         modalDialog: {
             type: String,
@@ -43,10 +44,10 @@
     let modalInstance = null;
 
     onMounted(() => {
-        modalInstance = new Modal(modalRef.value);
+        modalInstance = new Modal(modalRef.value,{ keyboard: false });
     });
 
-    const showModal = () => modalInstance?.show();
+    const showModal = () => modalInstance?.show(); //
     const hideModal = () => modalInstance?.hide();
 
     // Expose modal functions and ref to the parent
