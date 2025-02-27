@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\EdocsController;
 use App\Http\Controllers\SettingsController;
 
@@ -39,4 +40,13 @@ Route::controller(EdocsController::class)->group(function () {
 
 Route::controller(SettingsController::class)->group(function () {
     Route::get('get_user_master', 'getUserMaster')->name('get_user_master');
+});
+
+Route::get('/auth/redirect', function () {
+    // return Socialite::driver('google')->redirect();
+});
+
+Route::get('/auth/callback', function () {
+    // $user = Socialite::driver('google')->user();
+    // $user->token
 });

@@ -1,7 +1,7 @@
-setup: #Run Setup from the sratch
+setup: #Run Setup from the sratch #@make composer-update
 	@make build
 	@make up 
-	@make composer-update
+	
 ps:  #Check docker containers
 	docker-compose ps
 build: #Run build force and no cache

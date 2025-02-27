@@ -227,7 +227,6 @@ class EdocsController extends Controller
             throw $th;
         }
     }
-
      /**
      * @param $request Handle PDF upload and convert a specific page to an image.
      */
