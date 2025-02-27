@@ -28,7 +28,7 @@ function checkIfSessionExist(to, from, next) {
 
 export default [
     {
-        path: '/docu-app',
+        path: '/',
         component: Login,
         name: 'login',
     },
@@ -39,7 +39,7 @@ export default [
     // },
     {
         beforeEnter: checkIfSessionExist,
-        path: '/docu-app/main/',
+        path: '/main/',
         name: 'main',
         component: IndexComponent,
         children: [

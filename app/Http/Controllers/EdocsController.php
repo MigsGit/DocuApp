@@ -36,7 +36,8 @@ class EdocsController extends Controller
         ResourceInterface $resource_interface,EdocsInterface $edocs_interface,
         PdfCustomInterface $pdf_custom_interface,CommonInterface $common_interface,
         PdfService $pdf_service
-    ) {
+    )
+    {
         $this->resource_interface = $resource_interface;
         $this->edocs_interface = $edocs_interface;
         $this->pdf_service = $pdf_service;
@@ -184,8 +185,6 @@ class EdocsController extends Controller
             return response()->json(['is_success' => 'false', 'exceptionError' => e->getMessage()]);
         }
     }
-
-
     public function readDocumentById(Request $request){
         try {
             $read_document_by_id = $this->resource_interface->readById(Document::class,$request->document_id);
@@ -211,7 +210,6 @@ class EdocsController extends Controller
             throw $th;
         }
     }
-
     public function readApproverNameById(Request $request){
         return $request->all();
         try {
@@ -253,7 +251,6 @@ class EdocsController extends Controller
             throw $e;
         }
     }
-
     public function showPdfWithSignatures(Request $request){
         return $this->pdf_custom_interface->insertMultipleImageAtCoordinates($request->documentId);
         /**
@@ -269,7 +266,6 @@ class EdocsController extends Controller
         // $insert_image_at_coordinates = $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.4472630173564753', '0.563177771783113', 1);
         $this->pdf_service->insertImageAtCoordinates($pdfPath, $imagePath, '0.711121157323689 ', '0.6189567684193703', 1);
     }
-
     public function updateEdocsApprovalStatus(Request $request){
         $data = [
             'status' => $request->status,

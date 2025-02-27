@@ -1,0 +1,12 @@
+services:
+
+  docu-app:
+    container_name: docu-app
+    build: .
+    volumes:
+      - ./:/var/www/html:cache # ./ is better on transfering laravel project to the container location
+      # - /var/www/html/docker_laravel_9:/var/www/html:cache #Put laravel project to the container location
+    ports:
+      - 9002:80
+
+
